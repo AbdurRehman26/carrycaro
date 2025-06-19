@@ -1,0 +1,183 @@
+<?php
+
+namespace App\Filament\Resources\TravelResource\Pages;
+
+use App\Filament\Resources\MyTravelResource;
+use App\Filament\Resources\TravelResource;
+use App\Filament\Resources\TravelResource\RelationManagers\TravelDeliveryRequestRelationManager;
+use App\Filament\Traits\DeliveryRequestMethods;
+use App\Filament\Traits\TravelMethods;
+use App\Models\City;
+use Filament\Forms\Components\DatePicker;
+use Filament\Resources\Pages\ListRecords;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Columns\Layout\Split;
+use Filament\Tables\Columns\Layout\Stack;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Enums\FiltersLayout;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+
+class ListTravel extends ListRecords
+{
+    use TravelMethods, DeliveryRequestMethods;
+
+    protected static string $resource = TravelResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            $this->createTravelAction()
+        ];
+    }
+
+    public function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                TextColumn::make('user.name')
+                    ->size('lg')
+                    ->label('Traveler')
+                    ->icon('heroicon-o-user-circle')->extraAttributes([
+                        'class' => 'mb-4 font-bold',
+                    ]),
+                Stack::make([
+                    Split::make([
+                        TextColumn::make('fromCity.name')
+                            ->icon('fas-plane-departure')
+                            ->label('From City'),
+                        TextColumn::make('fromCity.country.name')
+                            ->icon('heroicon-o-globe-americas')
+                            ->label('From Country'),
+                    ]),
+                    Split::make([
+                        TextColumn::make('toCity.name')
+                            ->icon('fas-plane-arrival')
+                            ->label('To City'),
+                        TextColumn::make('toCity.country.name')
+                            ->icon('heroicon-o-globe-asia-australia')
+                            ->label('To Country'),
+                    ]),
+
+                    Split::make([
+                        TextColumn::make('departure_date')
+                            ->date()
+                            ->label('Departure Date'),
+                        TextColumn::make('arrival_date')
+                            ->date()
+                            ->label('Arrival Date'),
+                    ]),
+
+                    Split::make([
+                        TextColumn::make('weight_available')->suffix(' Kg')->prefix('Weight Available: ')
+                            ->size('lg')->label('Available Weight'),
+                        TextColumn::make('weight_price')->prefix('Price per weight: '),
+                    ]),
+
+                    TextColumn::make('matches_count')
+                        ->suffix('  delivery offers')
+                        ->badge()
+                        ->color('info')
+//                        ->url(fn($record) => TravelResource::getUrl('view', [
+//                            'record' => $record->id,
+//                        ]))
+                        ->counts('matches'),
+
+
+                    TextColumn::make('airline')
+                        ->label('Airline'),
+                    TextColumn::make('notes')
+                        ->limit(50)
+                        ->label('Notes'),
+                ])->space(3),
+            ])->actions([
+                $this->createDeliveryRequestAction(Action::class)->color('info')
+                    ->visible(fn ($record) => $record->user_id !== auth()->user()->id && $record->matches()->where('user_id', auth()->user()->id)->doesntExist()),
+                Action::make('view_details')
+                    ->label('View Details')
+                    ->url(fn($record) => TravelResource::getUrl('view',
+                        [
+                            'record' => $record
+                        ]
+                    ))
+                    ->button()
+                    ->color('info')
+            ])
+            ->filters([
+                SelectFilter::make('from_city_id')
+                    ->label('From City')
+                    ->searchable()
+                    ->getSearchResultsUsing(function (string $search): array {
+                    return City::with('country')
+                        ->where('name', 'like', "%{$search}%")
+                        ->limit(50)
+                        ->get()
+                        ->mapWithKeys(function ($city) {
+                            return [$city->id => $city->name . ' (' . $city->country->name . ')'];
+                        })
+                        ->toArray();
+                    })->getOptionLabelUsing(function ($value): string {
+                        $city = City::with('country')->find($value);
+                        return $city ? $city->name . ' (' . $city->country->name . ')' : $value;
+                    })->query(function($query, array $data){
+                        if(empty($data['value'])){
+                            return $query;
+                        }
+
+                        return $query->where('from_city_id', $data['value']);
+                    }),
+                SelectFilter::make('to_city_id')
+                    ->label('To City')
+                    ->searchable()
+                    ->getSearchResultsUsing(function (string $search): array {
+                        return City::with('country')
+                            ->where('name', 'like', "%{$search}%")
+                            ->limit(50)
+                            ->get()
+                            ->mapWithKeys(function ($city) {
+                                return [$city->id => $city->name . ' (' . $city->country->name . ')'];
+                            })
+                            ->toArray();
+                    })->getOptionLabelUsing(function ($value): string {
+                        $city = City::with('country')->find($value);
+                        return $city ? $city->name . ' (' . $city->country->name . ')' : $value;
+                    })->query(function($query, array $data){
+                        if(empty($data['value'])){
+                            return $query;
+                        }
+
+                        return $query->where('to_city_id', $data['value']);
+                    }),
+
+                Filter::make('departure_date')
+                    ->form([
+                        DatePicker::make('departure_date'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['departure_date'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('departure_date', '=', $date),
+                            );
+                    }),
+                Filter::make('arrival_date')
+                    ->form([
+                        DatePicker::make('arrival_date'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['arrival_date'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('arrival_date', '=', $date),
+                            );
+                    })
+            ])
+            ->filtersLayout(FiltersLayout::AboveContent)
+            ->contentGrid([
+                'md' => 2,
+                'xl' => 2,
+            ]);
+    }
+}
