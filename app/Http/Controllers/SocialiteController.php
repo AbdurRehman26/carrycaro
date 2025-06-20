@@ -42,7 +42,7 @@ class SocialiteController extends Controller
         Auth::login($user);
         session()->regenerate();
 
-        return redirect('/app/delivery-requests');
+        return redirect('/');
     }
 
     protected function validateProvider(string $provider): array
