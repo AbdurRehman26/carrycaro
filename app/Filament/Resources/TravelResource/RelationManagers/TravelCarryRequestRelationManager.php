@@ -35,7 +35,7 @@ class TravelCarryRequestRelationManager extends RelationManager
             ])->actions([
                 Action::make('delete')
                     ->label('Delete')
-                    ->visible(fn($record) => $record->user_id == auth()->id())
+                    ->visible(fn($record) => $record->carryRequest->user_id == auth()->id())
                     ->requiresConfirmation()
                     ->action(fn($record) => $record->delete())
                     ->icon('heroicon-o-x-circle')
