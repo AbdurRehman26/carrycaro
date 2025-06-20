@@ -5,15 +5,12 @@ namespace App\Filament\Traits;
 use App\Models\CarryRequest;
 use App\Models\CarryRequestOffer;
 use App\Models\City;
-use App\Models\Country;
 use App\Models\Travel;
-use Filament\Actions\CreateAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
-use Illuminate\Database\Eloquent\Model;
 
 trait TravelMethods
 {

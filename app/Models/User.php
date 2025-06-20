@@ -57,4 +57,9 @@ class User extends Authenticatable implements MustVerifyEmail, UserContract, Fil
     {
         return true;
     }
+
+    public function travels(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Travel::class);
+    }
 }
