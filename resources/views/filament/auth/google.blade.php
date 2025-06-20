@@ -24,7 +24,7 @@
                 ></path>
             </svg>
         </div>
-        <p class="flex justify-center items-center text-black text-sm tracking-wider">Sign in with Google</p>
+        <p class="flex justify-center items-center text-black text-sm tracking-wider">Login with Google</p>
     </div>
 
 

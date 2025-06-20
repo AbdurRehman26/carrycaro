@@ -71,6 +71,10 @@ class AppPanelProvider extends PanelProvider
                 'panels::auth.login.form.after',
                 fn () => view('filament.auth.google')
             )
+            ->renderHook(
+                'panels::auth.register.form.after',
+                fn () => view('filament.auth.google')
+            )
             ->authMiddleware([
                 Authenticate::class,
             ])->userMenuItems([
