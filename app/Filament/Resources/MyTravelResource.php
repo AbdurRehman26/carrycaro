@@ -4,7 +4,6 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\MyTravelResource\Pages;
 use App\Filament\Resources\TravelResource\Pages\ViewTravel;
-use App\Filament\Resources\TravelResource\RelationManagers\TravelDeliveryRequestRelationManager;
 use App\Models\Travel;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -14,6 +13,8 @@ use Illuminate\Database\Eloquent\Builder;
 class MyTravelResource extends Resource
 {
     protected static ?string $model = Travel::class;
+
+    protected static bool $shouldRegisterNavigation = false;
 
     protected static ?string $label = 'My Travel';
 

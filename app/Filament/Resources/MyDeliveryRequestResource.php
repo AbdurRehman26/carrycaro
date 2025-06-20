@@ -14,6 +14,8 @@ class MyDeliveryRequestResource extends Resource
 {
     protected static ?string $model = DeliveryRequest::class;
 
+    protected static bool $shouldRegisterNavigation = false;
+
     protected static ?string $navigationLabel = 'My Carry Requests';
 
     protected static ?string $label = 'My Carry Requests';
