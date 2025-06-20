@@ -41,7 +41,7 @@ class AppPanelProvider extends PanelProvider
                 'black' => Color::hex('#000'),
             ])
             ->id('app')
-            ->path('app')
+            ->path('/')
             ->viteTheme('resources/css/filament/app/theme.css')
             ->brandLogo(fn() => view('filament.brand'))
             ->brandLogoHeight('30px')
