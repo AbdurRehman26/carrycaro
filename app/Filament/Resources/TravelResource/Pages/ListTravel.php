@@ -4,10 +4,11 @@ namespace App\Filament\Resources\TravelResource\Pages;
 
 use App\Filament\Resources\MyTravelResource;
 use App\Filament\Resources\TravelResource;
-use App\Filament\Resources\TravelResource\RelationManagers\TravelDeliveryRequestRelationManager;
-use App\Filament\Traits\DeliveryRequestMethods;
+use App\Filament\Resources\TravelResource\RelationManagers\TravelCarryRequestRelationManager;
+use App\Filament\Traits\CarryRequestMethods;
 use App\Filament\Traits\TravelMethods;
 use App\Models\City;
+use Filament\Actions\CreateAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Tables\Actions\Action;
@@ -22,14 +23,14 @@ use Illuminate\Database\Eloquent\Builder;
 
 class ListTravel extends ListRecords
 {
-    use TravelMethods, DeliveryRequestMethods;
+    use TravelMethods, CarryRequestMethods;
 
     protected static string $resource = TravelResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            $this->createTravelAction()
+            $this->createTravelAction(CreateAction::class)->createAnother(false)
         ];
     }
 
@@ -76,14 +77,14 @@ class ListTravel extends ListRecords
                         TextColumn::make('weight_price')->prefix('Price per weight: '),
                     ]),
 
-                    TextColumn::make('matches_count')
-                        ->suffix('  delivery offers')
+                    TextColumn::make('offers_count')
+                        ->suffix('  carry offers')
                         ->badge()
                         ->color('info')
 //                        ->url(fn($record) => TravelResource::getUrl('view', [
 //                            'record' => $record->id,
 //                        ]))
-                        ->counts('matches'),
+                        ->counts('offers'),
 
 
                     TextColumn::make('airline')
@@ -93,8 +94,8 @@ class ListTravel extends ListRecords
                         ->label('Notes'),
                 ])->space(3),
             ])->actions([
-                $this->createDeliveryRequestAction(Action::class)->color('info')
-                    ->visible(fn ($record) => $record->user_id !== auth()->user()->id && $record->matches()->where('user_id', auth()->user()->id)->doesntExist()),
+                $this->createCarryRequestAction(Action::class)->color('info')
+                    ->visible(fn ($record) => $record->user_id !== auth()->user()->id && $record->offers()->where('user_id', auth()->user()->id)->doesntExist()),
                 Action::make('view_details')
                     ->label('View Details')
                     ->url(fn($record) => TravelResource::getUrl('view',

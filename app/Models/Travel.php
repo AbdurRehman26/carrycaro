@@ -29,5 +29,5 @@ class Travel extends Model
     public function fromCity(): BelongsTo { return $this->belongsTo(City::class, 'from_city_id'); }
 
     public function user(): BelongsTo { return $this->belongsTo(User::class); }
-    public function matches(): HasMany { return $this->hasMany(DeliveryMatch::class, 'travel_id'); }
+    public function offers(): HasMany { return $this->hasMany(CarryRequestOffer::class, 'travel_id'); }
 }

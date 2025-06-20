@@ -3,7 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\TravelResource\Pages;
-use App\Filament\Resources\TravelResource\RelationManagers\TravelDeliveryRequestRelationManager;
+use App\Filament\Resources\TravelResource\RelationManagers\TravelCarryRequestRelationManager;
 use App\Models\Travel;
 use Filament\Resources\Resource;
 
@@ -24,7 +24,7 @@ class TravelResource extends Resource
     public static function getRelations(): array
     {
         return [
-            TravelDeliveryRequestRelationManager::class
+            TravelCarryRequestRelationManager::class
         ];
     }
 }

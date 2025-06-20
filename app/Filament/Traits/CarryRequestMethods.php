@@ -3,9 +3,9 @@
 namespace App\Filament\Traits;
 
 use App\Models\City;
-use App\Models\DeliveryMatch;
-use App\Models\DeliveryRequest;
-use App\Models\DeliveryRequestProduct;
+use App\Models\CarryRequestOffer;
+use App\Models\CarryRequest;
+use App\Models\CarryRequestProduct;
 use App\Models\Product;
 use App\Models\Travel;
 use Carbon\Carbon;
@@ -20,12 +20,12 @@ use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Support\Colors\Color;
 
-trait DeliveryRequestMethods
+trait CarryRequestMethods
 {
-    public function createDeliveryRequestAction($action)
+    public function createCarryRequestAction($action)
     {
-        return $action::make('add_delivery_request')
-            ->label('Add Carry Request')
+        return $action::make('add_carry_request')
+            ->label('Create Carry Request')
             ->button()
             ->form([
                 Toggle::make('add_product')->reactive()->default(true),
@@ -119,8 +119,8 @@ trait DeliveryRequestMethods
                 }
 
 
-                // Assuming you have a DeliveryRequest model
-                $deliveryRequest =  \App\Models\DeliveryRequest::query()->create(
+                // Assuming you have a CarryRequest model
+                $carryRequest =  \App\Models\CarryRequest::query()->create(
                     array_merge(
                         [
                             'product_id' => isset($product) ? $product->id : null,
@@ -133,24 +133,24 @@ trait DeliveryRequestMethods
                 );
 
                 if(! empty($product)){
-                    DeliveryRequestProduct::query()->create([
-                        'delivery_request_id' => $deliveryRequest->id,
+                    CarryRequestProduct::query()->create([
+                        'carry_request_id' => $carryRequest->id,
                         'product_id' => $product->id,
                     ]);
                 }
 
                 if(!empty($travel->id)){
-                    DeliveryMatch::query()->create([
+                    CarryRequestOffer::query()->create([
                         'travel_id' => $travel->id,
-                        'delivery_request_id' => $deliveryRequest->id,
+                        'carry_request_id' => $carryRequest->id,
                         'user_id' => auth()->id(),
                     ]);
                 }
 
                 // Optionally, you can add a notification here
                 \Filament\Notifications\Notification::make()
-                    ->title('Delivery Offer Added')
-                    ->body('Your delivery offer has been successfully added.')
+                    ->title('Carry Request Added')
+                    ->body('Your carry request has been successfully added.')
                     ->success()
                     ->send();
             });
@@ -158,25 +158,28 @@ trait DeliveryRequestMethods
 
     public function iCanBringAction($actionClass): MountableAction
     {
+        $travelLists = Travel::query()
+            ->where('user_id', auth()->id())
+            ->get()
+            ->mapWithKeys(function ($record) {
+                return [
+                    $record->id => "{$record->fromCity->name} ({$record->fromCity->country->name}) to {$record->toCity->name} ({$record->toCity->country->name}) \n ( Departure: " . Carbon::parse($record->departure_date)->toDateString() . ") - ( Arrival: " . Carbon::parse($record->arrival_date)->toDateString(). ")"
+                ];
+            })->toArray();
+
         return $actionClass::make('i_can_bring')
-            ->authorize(fn($record) => $record->user_id != auth()->id())
+            ->authorize(fn($record) => $record->user_id != auth()->id() && !empty($travelLists))
             ->label('I can take with me')
             ->icon('heroicon-o-hand-raised')
             ->color(Color::Purple)
             ->form([
                 Select::make('travel_id')
                     ->label('Select Travel')
-                    ->options(Travel::query()
-                        ->where('user_id', auth()->id())
-                        ->get()
-                        ->mapWithKeys(function ($record) {
-                            return [
-                                $record->id => "{$record->fromCity->name} ({$record->fromCity->country->name}) to {$record->toCity->name} ({$record->toCity->country->name}) \n ( Departure: " . Carbon::parse($record->departure_date)->toDateString() . ") - ( Arrival: " . Carbon::parse($record->arrival_date)->toDateString(). ")"
-                            ];
-                        })->toArray(),
-                    )
+                    ->visible(!empty($travelLists))
+                    ->options($travelLists)
                     ->searchable(),
                 TextInput::make('message')
+                    ->visible(!empty($travelLists))
                     ->label('Additional Information')
                     ->placeholder('Any additional information you want to provide'),
             ])
@@ -185,11 +188,11 @@ trait DeliveryRequestMethods
             ->modalHeading('Confirm Delivery Offer')
             ->modalSubheading('Are you sure you want to opt for bringing this delivery?')
             ->modalButton('Yes, I can take with me')
-            ->action(function (array $data, DeliveryRequest $record) {
+            ->action(function (array $data, CarryRequest $record) {
 
-                DeliveryMatch::query()->create([
+                CarryRequestOffer::query()->create([
                     'travel_id' => $data['travel_id'],
-                    'delivery_request_id' => $record->id,
+                    'carry_request_id' => $record->id,
                     'message' => $data['message'] ?? '',
                     'user_id' => auth()->id(),
                 ]);

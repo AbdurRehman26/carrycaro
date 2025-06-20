@@ -2,6 +2,8 @@
 
 namespace App\Filament\Traits;
 
+use App\Models\CarryRequest;
+use App\Models\CarryRequestOffer;
 use App\Models\City;
 use App\Models\Country;
 use App\Models\Travel;
@@ -11,13 +13,14 @@ use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
+use Illuminate\Database\Eloquent\Model;
 
 trait TravelMethods
 {
-    protected function createTravelAction(): CreateAction
+    protected function createTravelAction($action)
     {
         return
-            CreateAction::make()
+            $action::make('create_travel')
                 ->slideOver()
                 ->form([
                     Fieldset::make()->schema([
@@ -61,11 +64,14 @@ trait TravelMethods
                             ->label('Departure Date')->required(),
                         DatePicker::make('arrival_date')
                             ->label('Arrival Date')->required(),
-                        TextInput::make('weight_available')->placeholder('Available weight (kg)')
+                        TextInput::make('weight_available')->label('Weight Available (In Kgs)')
+                            ->placeholder('Available weight (kg)')
                             ->numeric()
                             ->minValue(0)
                             ->default(0),
-                        TextInput::make('weight_price')->placeholder('Price per kg (optional) with currency'),
+                        TextInput::make('weight_price')
+                            ->placeholder('Price per kg (optional) with currency')
+                            ->label('Weight Price (with currency)'),
                         TextInput::make('airline')
                             ->label('Airline (optional)'),
                         TextInput::make('notes')
@@ -73,14 +79,12 @@ trait TravelMethods
                     ]),
                 ])
                 ->label('Add Travel Information')
-                ->createAnother(false)
-                ->action(function (array $data) {
+                ->action(function (CarryRequest $carryRequest, array $data) {
 
                     $fromCountryId = City::query()->find($data['from_city_id'])->country_id;
                     $toCountryId = City::query()->find($data['to_city_id'])->country_id;
 
-
-                    Travel::query()->create(
+                    $travel = Travel::query()->create(
                         array_merge(
                             [
                                 ...$data
@@ -91,6 +95,14 @@ trait TravelMethods
                                 'user_id' => auth()->user()->id
                             ]
                         ));
+
+                    if(!empty($carryRequest->id)){
+                        CarryRequestOffer::query()->create([
+                            'travel_id' => $travel->id,
+                            'carry_request_id' => $carryRequest->id,
+                            'user_id' => auth()->id(),
+                        ]);
+                    }
 
                     Notification::make('Travel Information Added')
                         ->body('Your travel information has been successfully added.')

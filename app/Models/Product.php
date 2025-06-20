@@ -17,5 +17,5 @@ class Product extends Model
     ];
 
     public function user(): BelongsTo { return $this->belongsTo(User::class); }
-    public function deliveryRequest(): HasOne { return $this->hasOne(DeliveryRequest::class);}
+    public function CarryRequest(): HasOne { return $this->hasOne(CarryRequest::class);}
 }

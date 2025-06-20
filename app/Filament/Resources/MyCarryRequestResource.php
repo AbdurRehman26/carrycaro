@@ -2,17 +2,17 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\DeliveryRequestResource\RelationManagers\DeliveryRequestRelationManager;
-use App\Filament\Resources\MyDeliveryRequestResource\Pages;
-use App\Models\DeliveryRequest;
+use App\Filament\Resources\CarryRequestResource\RelationManagers\CarryRequestRelationManager;
+use App\Filament\Resources\MyCarryRequestResource\Pages;
+use App\Models\CarryRequest;
 use Filament\Resources\Resource;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 
-class MyDeliveryRequestResource extends Resource
+class MyCarryRequestResource extends Resource
 {
-    protected static ?string $model = DeliveryRequest::class;
+    protected static ?string $model = CarryRequest::class;
 
     protected static bool $shouldRegisterNavigation = false;
 
@@ -25,7 +25,7 @@ class MyDeliveryRequestResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->query(DeliveryRequest::with('matches')->where('user_id', auth()->user()->id))
+            ->query(CarryRequest::with('offers')->where('user_id', auth()->user()->id))
             ->columns([
                 TextColumn::make('fromCity.name')->formatStateUsing(fn(Model $model) => $model->fromCity->name . ' (' . $model->fromCity->country->name . ')')->label('From'),
                 TextColumn::make('toCity.name')->formatStateUsing(fn(Model $model) => $model->toCity->name . ' (' . $model->toCity->country->name . ')')->label('To'),
@@ -34,11 +34,11 @@ class MyDeliveryRequestResource extends Resource
                 TextColumn::make('weight')->suffix(' Kg'),
                 TextColumn::make('price'),
                 TextColumn::make('id')->label('To buy')->badge()->formatStateUsing(fn(Model $model) => $model->products()->count() ? 'Yes' : 'No'),
-                TextColumn::make('matches_count')
+                TextColumn::make('offers_count')
                     ->label('Delivery Offers')
-                    ->counts('matches')
+                    ->counts('offers')
                     ->badge(),
-            ])->recordUrl(fn(DeliveryRequest $record) => DeliveryRequestResource::getUrl('view', [
+            ])->recordUrl(fn(CarryRequest $record) => CarryRequestResource::getUrl('view', [
                 'record' => $record->id,
             ]));
     }
@@ -46,14 +46,14 @@ class MyDeliveryRequestResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListMyDeliveryRequests::route('/')
+            'index' => Pages\ListMyCarryRequests::route('/')
         ];
     }
 
     public static function getRelations(): array
     {
         return [
-            DeliveryRequestRelationManager::class
+            CarryRequestRelationManager::class
         ];
     }
 }

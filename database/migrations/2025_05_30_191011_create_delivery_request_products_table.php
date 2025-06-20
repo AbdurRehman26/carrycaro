@@ -8,10 +8,10 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('delivery_request_products', function (Blueprint $table) {
+        Schema::create('carry_request_products', function (Blueprint $table) {
             $table->id();
             $table->foreignId('product_id')->constrained()->onDelete('cascade');
-            $table->foreignId('delivery_request_id')->constrained()->onDelete('cascade');
+            $table->foreignId('carry_request_id')->constrained()->onDelete('cascade');
             $table->softDeletes();
             $table->timestamps();
         });
@@ -19,6 +19,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('delivery_request_products');
+        Schema::dropIfExists('carry_request_products');
     }
 };

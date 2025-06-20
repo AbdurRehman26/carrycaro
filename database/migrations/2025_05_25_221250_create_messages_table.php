@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('messages', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('delivery_match_id')->constrained()->onDelete('cascade');
+            $table->foreignId('carry_request_offer_id')->constrained()->onDelete('cascade');
             $table->foreignId('sender_id')->constrained('users')->onDelete('cascade');
             $table->text('message');
             $table->timestamp('sent_at')->nullable();

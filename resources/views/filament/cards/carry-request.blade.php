@@ -7,7 +7,7 @@
             <div class="flex justify-between">
                 <div>
                     <span class="mb-4 inline-block justify-end px-3 py-2 text-xs font-bold rounded-full bg-yellow-100 text-yellow-800">
-                        {{ $record->matches()->count() }} Carry Offer(s)
+                        {{ $record->offers()->count() }} Carry Offer(s)
                     </span>
                 </div>
 

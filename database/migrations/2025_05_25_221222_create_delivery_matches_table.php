@@ -8,9 +8,9 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('delivery_matches', function (Blueprint $table) {
+        Schema::create('carry_request_offers', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('delivery_request_id')->constrained()->onDelete('cascade');
+            $table->foreignId('carry_request_id')->constrained()->onDelete('cascade');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('travel_id')->constrained('travels')->onDelete('cascade');
             $table->string('status')->default('pending');
@@ -22,6 +22,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('delivery_matches');
+        Schema::dropIfExists('carry_request_offers');
     }
 };

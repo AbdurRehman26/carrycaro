@@ -5,13 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class DeliveryRequestProduct extends Model
+class CarryRequestProduct extends Model
 {
     use SoftDeletes;
 
     protected $fillable = [
         'product_id',
-        'delivery_request_id',
+        'carry_request_id',
     ];
 
     public function product()
@@ -19,8 +19,8 @@ class DeliveryRequestProduct extends Model
         return $this->belongsTo(Product::class);
     }
 
-    public function deliveryRequest()
+    public function carryRequest()
     {
-        return $this->belongsTo(DeliveryRequest::class);
+        return $this->belongsTo(CarryRequest::class);
     }
 }

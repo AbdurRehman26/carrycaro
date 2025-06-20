@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class DeliveryRequest extends Model
+class CarryRequest extends Model
 {
     use SoftDeletes;
 
@@ -45,9 +45,9 @@ class DeliveryRequest extends Model
 
     public function products(): HasManyThrough
     {
-        return $this->hasManyThrough(Product::class, DeliveryRequestProduct::class, 'delivery_request_id', 'id');
+        return $this->hasManyThrough(Product::class, CarryRequestProduct::class, 'carry_request_id', 'id');
     }
-    public function matches(): HasMany { return $this->hasMany(DeliveryMatch::class); }
+    public function offers(): HasMany { return $this->hasMany(CarryRequestOffer::class); }
 
-    public function myMatch(): HasOne { return $this->hasOne(DeliveryMatch::class)->where('user_id', auth()->user()->id); }
+    public function myOffer(): HasOne { return $this->hasOne(CarryRequestOffer::class)->where('user_id', auth()->user()->id); }
 }

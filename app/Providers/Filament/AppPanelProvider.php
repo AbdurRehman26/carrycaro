@@ -5,7 +5,7 @@ namespace App\Providers\Filament;
 use App\Filament\Pages\Auth\Login;
 use App\Filament\Pages\Auth\Register;
 use App\Filament\Pages\EditProfile;
-use App\Filament\Resources\MyDeliveryRequestResource;
+use App\Filament\Resources\MyCarryRequestResource;
 use App\Filament\Resources\MyTravelResource;
 use Exception;
 use Filament\Http\Middleware\Authenticate;
@@ -81,7 +81,7 @@ class AppPanelProvider extends PanelProvider
                 'my-carry-requests' => MenuItem::make()
                     ->label('My Carry Requests')
                     ->icon('heroicon-o-truck') // optional icon
-                    ->url(fn() => MyDeliveryRequestResource::getUrl('index')),
+                    ->url(fn() => MyCarryRequestResource::getUrl('index')),
             ]);
     }
 }

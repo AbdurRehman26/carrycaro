@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Filament\Resources\DeliveryRequestResource\Pages;
+namespace App\Filament\Resources\CarryRequestResource\Pages;
 
-use App\Filament\Resources\MyDeliveryRequestResource;
-use App\Filament\Traits\DeliveryRequestMethods;
+use App\Filament\Resources\MyCarryRequestResource;
+use App\Filament\Traits\CarryRequestMethods;
 use Filament\Infolists\Components\Grid;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
@@ -11,18 +11,18 @@ use Filament\Infolists\Infolist;
 use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Database\Eloquent\Model;
 
-class ViewDeliveryRequest extends ViewRecord
+class ViewCarryRequest extends ViewRecord
 {
-    use DeliveryRequestMethods;
+    use CarryRequestMethods;
 
-    protected static string $resource = MyDeliveryRequestResource::class;
+    protected static string $resource = MyCarryRequestResource::class;
 
     protected static ?string $title = 'View Carry Request';
 
     protected function getHeaderActions(): array
     {
         return [
-            $this->iCanBringAction(\Filament\Actions\Action::class)->visible(fn(Model $record) => $record->myMatch()->doesntExist())
+            $this->iCanBringAction(\Filament\Actions\Action::class)->visible(fn(Model $record) => $record->myOffer()->doesntExist())
         ];
     }
 
@@ -30,7 +30,7 @@ class ViewDeliveryRequest extends ViewRecord
     {
         return $infolist
             ->schema([
-                Section::make('Delivery Info')
+                Section::make('Carry Request Info')
                     ->schema([
                         Grid::make(2)->schema([
                             TextEntry::make('fromCity.name')->formatStateUsing(fn(Model $model) => $model->fromCity->name . ' (' . $model->fromCity->country->name . ')')->label('From'),
@@ -45,8 +45,25 @@ class ViewDeliveryRequest extends ViewRecord
                                 ->visible(fn(Model $record) => $record->products()->count())
                                 ->schema([
                                     TextEntry::make('products.product_name')->label('Product Name'),
-                                    TextEntry::make('products.product_link')->label('Product Link'),
-                                    TextEntry::make('products.product_description')->label('Product Description'),
+                                    TextEntry::make('products.product_link')
+                                        ->formatStateUsing(fn($record) => 'Link')
+                                        ->url(fn ($record) => $record->website)
+                                        ->url(fn ($record) => $record->products()->first()->product_link)
+                                        ->icon('heroicon-o-link')
+                                        ->label('Product Link'),
+                                    TextEntry::make('products.product_description')
+                                        ->limit(50)
+                                        ->label('Product Description')
+                                        ->tooltip(function (TextEntry $column): ?string {
+                                            $state = $column->getState();
+
+                                            if (strlen($state[0]) <= $column->getCharacterLimit()) {
+                                                return null;
+                                            }
+
+                                            // Only render the tooltip if the column content exceeds the length limit.
+                                            return $state[0];
+                                        }),
                                     TextEntry::make('products.store_name')->label('Store Name'),
                                     TextEntry::make('products.store_location')->label('Store Location'),
                                     TextEntry::make('products.price')->label('Price'),

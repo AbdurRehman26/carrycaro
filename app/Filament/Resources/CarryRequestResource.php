@@ -2,29 +2,28 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\DeliveryRequestResource\Pages;
-use App\Models\DeliveryRequest;
+use App\Filament\Resources\CarryRequestResource\Pages;
+use App\Models\CarryRequest;
 use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
 
-class DeliveryRequestResource extends Resource
+class CarryRequestResource extends Resource
 {
-    protected static ?string $model = DeliveryRequest::class;
-
+    protected static ?string $model = CarryRequest::class;
     protected static ?string $navigationIcon = 'heroicon-o-truck';
 
     protected static ?string $label = 'Carry Requests';
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->with('myMatch');
+        return parent::getEloquentQuery()->with('myOffer');
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListDeliveryRequests::route('/'),
-            'view' => Pages\ViewDeliveryRequest::route('/{record}'),
+            'index' => Pages\ListCarryRequests::route('/'),
+            'view' => Pages\ViewCarryRequest::route('/{record}'),
         ];
     }
 }

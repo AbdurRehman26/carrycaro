@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Filament\Resources\DeliveryRequestResource\Pages;
+namespace App\Filament\Resources\CarryRequestResource\Pages;
 
-use App\Filament\Resources\DeliveryRequestResource;
-use App\Filament\Resources\MyDeliveryRequestResource;
+use App\Filament\Resources\CarryRequestResource;
+use App\Filament\Traits\TravelMethods;
 use App\Models\City;
 use Filament\Actions\CreateAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Resources\Pages\ListRecords;
-use App\Filament\Traits\DeliveryRequestMethods;
+use App\Filament\Traits\CarryRequestMethods;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
@@ -20,16 +20,16 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
-class ListDeliveryRequests extends ListRecords
+class ListCarryRequests extends ListRecords
 {
-    use DeliveryRequestMethods;
+    use CarryRequestMethods, TravelMethods;
 
-    protected static string $resource = DeliveryRequestResource::class;
+    protected static string $resource = CarryRequestResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            $this->createDeliveryRequestAction(CreateAction::class)->createAnother(false),
+            $this->createCarryRequestAction(CreateAction::class)->createAnother(false),
         ];
     }
 
@@ -39,21 +39,22 @@ class ListDeliveryRequests extends ListRecords
             ->columns([
                 Stack::make([
                     ViewColumn::make('profile_card')
-                        ->view('filament.cards.delivery-request')
+                        ->view('filament.cards.carry-request')
                         ->extraAttributes([
                             'class' => 'text-center',
                         ])
                 ]),
-                TextColumn::make('myMatch.id')->formatStateUsing(fn($state) => 'You have already offered')->badge()
+                TextColumn::make('myOffer.id')->formatStateUsing(fn($state) => 'You have already offered')->badge()
             ])
             ->recordUrl(function(){
 
             })
             ->actions([
-                $this->iCanBringAction(Action::class)->visible(fn(Model $record) => $record->myMatch()->doesntExist()),
+                $this->iCanBringAction(Action::class)->visible(fn(Model $record) => $record->myOffer()->doesntExist()),
+                $this->createTravelAction(Action::class)->label('Add Travel Info and Request'),
                 Action::make('view_details')
                     ->label('View Details')
-                    ->url(fn($record) => DeliveryRequestResource::getUrl('view',
+                    ->url(fn($record) => CarryRequestResource::getUrl('view',
                         [
                             'record' => $record
                         ]
@@ -111,7 +112,7 @@ class ListDeliveryRequests extends ListRecords
 
                 Filter::make('carry_date')
                     ->form([
-                        DatePicker::make('carry_date')->label('Carry Date'),
+                        DatePicker::make('carry_date')->label('Delivery Date'),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
