@@ -38,6 +38,7 @@ class ListCarryRequests extends ListRecords
     {
         return $table
             ->columns([
+                TextColumn::make('myOffer.id')->formatStateUsing(fn($state) => 'You have already offered')->badge(),
                 Stack::make([
                     ViewColumn::make('profile_card')
                         ->view('filament.cards.carry-request')
@@ -45,7 +46,6 @@ class ListCarryRequests extends ListRecords
                             'class' => 'text-center',
                         ])
                 ]),
-                TextColumn::make('myOffer.id')->formatStateUsing(fn($state) => 'You have already offered')->badge()
             ])
             ->recordUrl(function(){
 
