@@ -48,9 +48,7 @@ class AppPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
-            ->widgets([
-                //
-            ])
+            ->databaseNotifications()
             ->login(Login::class)
             ->registration(Register::class)
             ->emailVerification()
@@ -77,15 +75,17 @@ class AppPanelProvider extends PanelProvider
             )
             ->authMiddleware([
                 Authenticate::class,
-            ])->userMenuItems([
-                'my-travels' => MenuItem::make()
-                    ->label('My Travels')
-                    ->icon('heroicon-o-briefcase') // optional icon
-                    ->url(fn() => MyTravelResource::getUrl('index')),
-                'my-carry-requests' => MenuItem::make()
-                    ->label('My Carry Requests')
-                    ->icon('heroicon-o-truck') // optional icon
-                    ->url(fn() => MyCarryRequestResource::getUrl('index')),
-            ]);
+            ])
+//            ->userMenuItems([
+//                'my-travels' => MenuItem::make()
+//                    ->label('My Travels')
+//                    ->icon('heroicon-o-briefcase') // optional icon
+//                    ->url(fn() => MyTravelResource::getUrl('index')),
+//                'my-carry-requests' => MenuItem::make()
+//                    ->label('My Carry Requests')
+//                    ->icon('heroicon-o-truck') // optional icon
+//                    ->url(fn() => MyCarryRequestResource::getUrl('index')),
+//            ])
+            ;
     }
 }

@@ -14,7 +14,7 @@ class MyCarryRequestResource extends Resource
 {
     protected static ?string $model = CarryRequest::class;
 
-    protected static bool $shouldRegisterNavigation = false;
+    protected static ?string $navigationGroup = 'Your Requests';
 
     protected static ?string $navigationLabel = 'My Carry Requests';
 

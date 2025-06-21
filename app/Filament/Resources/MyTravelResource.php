@@ -14,7 +14,7 @@ class MyTravelResource extends Resource
 {
     protected static ?string $model = Travel::class;
 
-    protected static bool $shouldRegisterNavigation = false;
+    protected static ?string $navigationGroup = 'Your Requests';
 
     protected static ?string $label = 'My Travel';
 
