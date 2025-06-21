@@ -29,10 +29,7 @@ jobs:
         username: ${{ secrets.SSH_USER }}
         key: ${{ secrets.SSH_KEY }}
         script: |
-          sudo apt-get update
-          sudo apt-get install -y php-xml
           cd /var/www/carrycaro
           git pull origin main       # ⬅️ Pull latest changes
-          composer install --no-dev --prefer-dist --no-progress
           php artisan migrate --force
           php artisan config:cache
