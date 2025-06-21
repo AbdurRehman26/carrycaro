@@ -21,11 +21,11 @@ class TravelCarryRequestRelationManager extends RelationManager
             ->modifyQueryUsing(fn (Builder $query) => $query->whereNull('deleted_at'))
             ->recordTitleAttribute('reviewId')
             ->columns([
-                TextColumn::make('CarryRequest.fromCity.name')->formatStateUsing(fn(Model $model) => $model->CarryRequest->fromCity->name . ' (' . $model->CarryRequest->fromCity->country->name . ')')->label('From'),
-                TextColumn::make('CarryRequest.toCity.name')->formatStateUsing(fn(Model $model) => $model->CarryRequest->toCity->name . ' (' . $model->CarryRequest->toCity->country->name . ')')->label('To'),
-                TextColumn::make('CarryRequest.preferred_date'),
-                TextColumn::make('CarryRequest.delivery_deadline'),
-                TextColumn::make('user.name'),
+                TextColumn::make('carryRequest.fromCity.name')->formatStateUsing(fn(Model $model) => $model->CarryRequest->fromCity->name . ' (' . $model->CarryRequest->fromCity->country->name . ')')->label('From'),
+                TextColumn::make('carryRequest.toCity.name')->formatStateUsing(fn(Model $model) => $model->CarryRequest->toCity->name . ' (' . $model->CarryRequest->toCity->country->name . ')')->label('To'),
+                TextColumn::make('carryRequest.preferred_date'),
+                TextColumn::make('carryRequest.delivery_deadline'),
+                TextColumn::make('carryRequest.user.name'),
                 TextColumn::make('status')->badge()->color(fn (string $state) => match ($state) {
                     'pending' => 'warning',
                     'active' => 'success',
