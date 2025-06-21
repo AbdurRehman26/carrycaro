@@ -95,7 +95,13 @@ class ListTravel extends ListRecords
                 ])->space(3),
             ])->actions([
                 $this->createCarryRequestAction(Action::class)->color('info')
-                    ->visible(fn ($record) => $record->user_id !== auth()->user()->id && $record->offers()->where('user_id', auth()->user()->id)->doesntExist()),
+                    ->visible(fn ($record) => $record->user_id !== auth()->user()->id && $record
+                            ->join('carry_request_offers', 'carry_request_offers.travel_id', 'travels.id')
+                            ->join('carry_requests', 'carry_requests.id', 'carry_request_offers.carry_request_id')
+                            ->where('carry_requests.user_id', auth()->user()->id)
+                            ->orWhere('carry_request_offers.user_id', auth()->user()->id)
+                            ->doesntExist()),
+
                 Action::make('view_details')
                     ->label('View Details')
                     ->url(fn($record) => TravelResource::getUrl('view',
