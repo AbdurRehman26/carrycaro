@@ -28,7 +28,7 @@ class TravelCarryRequestRelationManager extends RelationManager
                 TextColumn::make('carryRequest.user.name'),
                 TextColumn::make('status')->badge()->color(fn (string $state) => match ($state) {
                     'pending' => 'warning',
-                    'active' => 'success',
+                    'approved' => 'success',
                     'banned' => 'danger',
                     default => 'gray',
                 }),
