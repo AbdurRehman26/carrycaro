@@ -51,7 +51,7 @@ class ListCarryRequests extends ListRecords
             })
             ->actions([
                 $this->iCanBringAction(Action::class)->visible(fn(Model $record) => $record->myOffer()->doesntExist()),
-                $this->createTravelAction(Action::class)->label('Add Travel Info and Request')->visible(fn(Model $record) => auth()->user()->travels()->doesntExist()),
+                $this->createTravelAction(Action::class)->label('Add Travel Info and Request')->visible(fn(Model $record) => $record->user_id != auth()->user()->id &&  auth()->user()->travels()->doesntExist()),
                 Action::make('view_details')
                     ->label('View Details')
                     ->url(fn($record) => CarryRequestResource::getUrl('view',
