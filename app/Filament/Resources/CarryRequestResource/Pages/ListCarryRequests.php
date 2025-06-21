@@ -38,7 +38,6 @@ class ListCarryRequests extends ListRecords
     {
         return $table
             ->columns([
-                TextColumn::make('myOffer.id')->formatStateUsing(fn($state) => 'You have already offered')->badge(),
                 Stack::make([
                     ViewColumn::make('profile_card')
                         ->view('filament.cards.carry-request')
@@ -62,6 +61,11 @@ class ListCarryRequests extends ListRecords
                     ->color('info'),
                 $this->createTravelAction(Action::class)->label('Add Travel Info and Request')->visible(fn(Model $record) => $record->user_id != auth()->user()->id &&  auth()->user()->travels()->doesntExist()),
                 $this->iCanBringAction(Action::class)->visible(fn(Model $record) => $record->myOffer()->doesntExist()),
+                Action::make('view_your_offer')
+                    ->label('Already Offered')
+                    ->disabled()
+                    ->visible(fn(Model $record) => $record->myOffer()->exists())
+                    ->color('info'),
             ])
             ->filters([
                 SelectFilter::make('from_city_id')

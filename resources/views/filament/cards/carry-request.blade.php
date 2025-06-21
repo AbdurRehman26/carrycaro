@@ -45,7 +45,7 @@
                     Parcel Requested Between:
                 </p>
 
-                <p class="mt-2 text-sm font-black text-white items-center">
+                <p class="mt-2 text-sm font-black text-black dark:text-white items-center">
                     {{ \Carbon\Carbon::parse($record->preferred_date)->format('d M Y') }} -> {{ \Carbon\Carbon::parse($record->delivery_deadline)->format('d M Y') }}
                 </p>
             </div>
