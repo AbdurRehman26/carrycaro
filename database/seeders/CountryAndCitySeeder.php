@@ -6,12 +6,14 @@ use App\Models\City;
 use App\Models\Country;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 
 class CountryAndCitySeeder extends Seeder
 {
     public function run(): void
     {
+        Log::info('Seeder started');
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         Country::query()->truncate();
         City::query()->truncate();
@@ -37,8 +39,10 @@ class CountryAndCitySeeder extends Seeder
             }
         }
 
+        Log::info('Inserting Countries');
         Country::query()->insert($countries);
         $dbCountries = Country::query()->pluck('id', 'name')->toArray();
+        Log::info('Countries Inserted');
 
         foreach ($collection as $key => $data) {
             if(!$key){
