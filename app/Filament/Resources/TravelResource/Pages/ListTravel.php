@@ -38,12 +38,12 @@ class ListTravel extends ListRecords
     {
         return $table
             ->columns([
-                TextColumn::make('user.name')
-                    ->size('lg')
-                    ->label('Traveler')
-                    ->icon('heroicon-o-user-circle')->extraAttributes([
-                        'class' => 'mb-4 font-bold',
-                    ]),
+//                TextColumn::make('user.name')
+//                    ->size('lg')
+//                    ->label('Traveler')
+//                    ->icon('heroicon-o-user-circle')->extraAttributes([
+//                        'class' => 'mb-4 font-bold',
+//                    ]),
                 Stack::make([
                     Split::make([
                         TextColumn::make('fromCity.name')

@@ -33,14 +33,14 @@ class ViewCarryRequest extends ViewRecord
                 Section::make('Carry Request Info')
                     ->schema([
                         Grid::make(2)->schema([
-                            TextEntry::make('fromCity.name')->formatStateUsing(fn(Model $model) => $model->fromCity->name . ' (' . $model->fromCity->country->name . ')')->label('From'),
-                            TextEntry::make('toCity.name')->formatStateUsing(fn(Model $model) => $model->toCity->name . ' (' . $model->toCity->country->name . ')')->label('To'),
-                            TextEntry::make('preferred_date')->label('Preferred Date')->date(),
-                            TextEntry::make('delivery_deadline')->label('Deadline')->date(),
-                            TextEntry::make('weight')->suffix(' Kg')->badge(),
-                            TextEntry::make('price')->label('Price - willing to pay (Approx.)'),
-                            TextEntry::make('created_at')->label('Created')->since(),
-                            TextEntry::make('user.name')->label('Created By'),
+                            TextEntry::make('fromCity.name')->color('primary')->formatStateUsing(fn(Model $model) => $model->fromCity->name . ' (' . $model->fromCity->country->name . ')')->label('From'),
+                            TextEntry::make('toCity.name')->color('primary')->formatStateUsing(fn(Model $model) => $model->toCity->name . ' (' . $model->toCity->country->name . ')')->label('To'),
+                            TextEntry::make('preferred_date')->color('primary')->label('Preferred Date')->date(),
+                            TextEntry::make('delivery_deadline')->color('primary')->label('Deadline')->date(),
+                            TextEntry::make('weight')->color('primary')->suffix(' Kg')->badge(),
+                            TextEntry::make('price')->color('primary')->label('Price - willing to pay (Approx.)'),
+                            TextEntry::make('created_at')->color('primary')->label('Created')->since(),
+                            TextEntry::make('user.name')->color('primary')->label('Created By'),
                             Section::make('Items to Buy')
                                 ->visible(fn(Model $record) => $record->products()->count())
                                 ->schema([

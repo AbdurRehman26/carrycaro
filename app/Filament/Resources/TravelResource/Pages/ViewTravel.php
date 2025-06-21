@@ -17,21 +17,21 @@ class ViewTravel extends ViewRecord
     {
         return $infolist
             ->schema([
-                Section::make('Delivery Info')
+                Section::make('Details')
                     ->schema([
                         Grid::make(2)->schema([
-                            TextEntry::make('fromCity.country.name')->label('From Country'),
-                            TextEntry::make('toCity.country.name')->label('To Country'),
-                            TextEntry::make('fromCity.name')->label('From City'),
-                            TextEntry::make('toCity.name')->label('To City'),
-                            TextEntry::make('departure_date')->date(),
-                            TextEntry::make('arrival_date')->date(),
-                            TextEntry::make('weight_available')->suffix(' Kg'),
-                            TextEntry::make('weight_price'),
-                            TextEntry::make('airline'),
-                            TextEntry::make('notes'),
-                            TextEntry::make('created_at')->label('Created')->since(),
-                            TextEntry::make('user.name')->label('User'),
+                            TextEntry::make('fromCity.country.name')->color('primary')->label('From Country'),
+                            TextEntry::make('toCity.country.name')->color('primary')->label('To Country'),
+                            TextEntry::make('fromCity.name')->color('primary')->label('From City'),
+                            TextEntry::make('toCity.name')->color('primary')->label('To City'),
+                            TextEntry::make('departure_date')->color('primary')->date(),
+                            TextEntry::make('arrival_date')->color('primary')->date(),
+                            TextEntry::make('weight_available')->color('primary')->suffix(' Kg'),
+                            TextEntry::make('weight_price')->color('primary'),
+                            TextEntry::make('updated_at')->label('Airline')->color('primary')->formatStateUsing(fn ($state, $record) => blank($record->notes) ? 'N/A' : $record->notes),
+                            TextEntry::make('id')->label('Notes')->color('primary')->formatStateUsing(fn ($state, $record) => blank($record->notes) ? 'N/A' : $record->notes),
+                            TextEntry::make('created_at')->color('primary')->label('Created')->since(),
+                            TextEntry::make('user.name')->color('primary')->label('User'),
                         ]),
                     ]),
             ]);
