@@ -60,5 +60,6 @@ class CountryAndCitySeeder extends Seeder
                 $cities = [];
             }
         }
-   }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+    }
 }
