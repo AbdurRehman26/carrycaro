@@ -42,16 +42,16 @@ class TravelCarryRequestRelationManager extends RelationManager
                     ->color('danger'),
                 Action::make('approve')
                     ->label('Approve')
-                    ->visible(fn($record) => $record->travel->user_id == auth()->id() && $record->user_id != auth()->id())
+                    ->visible(fn($record) => $record->status == 'pending' && $record->travel->user_id == auth()->id() && $record->user_id != auth()->id())
                     ->requiresConfirmation()
                     ->action(fn($record) => $record->approve())
                     ->icon('heroicon-o-check-circle')
                     ->color('primary'),
                 Action::make('reject')
                     ->label('Reject')
-                    ->visible(fn($record) => $record->travel->user_id == auth()->id() && $record->user_id != auth()->id())
+                    ->visible(fn($record) => $record->status == 'pending' && $record->travel->user_id == auth()->id() && $record->user_id != auth()->id())
                     ->requiresConfirmation()
-                    ->action(fn($record) => $record->rejected())
+                    ->action(fn($record) => $record->reject())
                     ->icon('heroicon-o-x-circle')
                     ->color('danger'),
             ]);

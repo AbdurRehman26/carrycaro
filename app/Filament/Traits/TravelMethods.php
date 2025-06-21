@@ -102,7 +102,7 @@ trait TravelMethods
                     }
 
                     Notification::make('Travel Information Added')
-                        ->body('Your travel information has been successfully added.')
+                        ->body('Your travel information has been added successfully.')
                         ->success()
                         ->send();
                 });

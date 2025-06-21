@@ -51,7 +51,7 @@ trait CarryRequestMethods
                                 TextInput::make('receiver_number')->label('Receiver Number')->visible(fn($get) => !$get('for_self')),
 
                                 TextInput::make('price')->placeholder('Price along with currency (euro, dollar etc)')->label('Price with currency - willing to pay (Approx.)')->required(),
-                                TextInput::make('weight')->numeric()->placeholder('Approx Weight (kg)')->required()->label('Delivery Weight (Approx.)'),
+                                TextInput::make('weight')->numeric()->placeholder('Approx Weight (kg)')->required()->label('Delivery Weight (Kg)'),
 
                                 Select::make('from_city_id')
                                     ->label('City')
@@ -149,7 +149,7 @@ trait CarryRequestMethods
                 // Optionally, you can add a notification here
                 \Filament\Notifications\Notification::make()
                     ->title('Carry Request Added')
-                    ->body('Your carry request has been successfully added.')
+                    ->body('Your carry request has been added successfully.')
                     ->success()
                     ->send();
             });
