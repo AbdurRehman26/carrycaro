@@ -64,9 +64,11 @@ trait TravelMethods
                         TextInput::make('weight_available')->label('Weight Available (In Kgs)')
                             ->placeholder('Available weight (kg)')
                             ->numeric()
+                            ->required()
                             ->minValue(0)
                             ->default(0),
                         TextInput::make('weight_price')
+                            ->required()
                             ->placeholder('Price per kg (optional) with currency')
                             ->label('Weight Price (with currency)'),
                         TextInput::make('airline')
