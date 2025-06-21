@@ -2,20 +2,21 @@
 
 namespace Database\Seeders;
 
+use App\Models\City;
+use App\Models\Country;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
+        DB::disableQueryLog();
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         User::query()->truncate();
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        Country::query()->truncate();
+        City::query()->truncate();
 
         /** @var User $user */
         $user = User::factory()->create([
@@ -26,7 +27,11 @@ class DatabaseSeeder extends Seeder
         User::factory()->count(20)->create();
 
         $this->call([
-           CountryAndCitySeeder::class,
+            CountrySeeder::class,
+            CitySeeder::class,
         ]);
+
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        DB::enableQueryLog();
     }
 }
