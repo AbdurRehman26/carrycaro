@@ -20,7 +20,7 @@ jobs:
         extensions: dom
 
     - name: Install dependencies
-      run: composer install --no-dev --prefer-dist --no-progress --no-suggest
+      run: composer install --no-dev --prefer-dist --no-progress
 
     - name: Execute remote commands
       uses: appleboy/ssh-action@master
@@ -31,6 +31,6 @@ jobs:
         script: |
           cd /var/www/carrycaro
           git pull origin main       # ⬅️ Pull latest changes
-          composer install --no-dev --prefer-dist --no-progress --no-suggest
+          composer install --no-dev --prefer-dist --no-progress
           php artisan migrate --force
           php artisan config:cache
