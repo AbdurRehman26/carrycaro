@@ -13,6 +13,7 @@ use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ViewColumn;
+use Filament\Tables\Enums\ActionsPosition;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
@@ -50,8 +51,6 @@ class ListCarryRequests extends ListRecords
 
             })
             ->actions([
-                $this->iCanBringAction(Action::class)->visible(fn(Model $record) => $record->myOffer()->doesntExist()),
-                $this->createTravelAction(Action::class)->label('Add Travel Info and Request')->visible(fn(Model $record) => $record->user_id != auth()->user()->id &&  auth()->user()->travels()->doesntExist()),
                 Action::make('view_details')
                     ->label('View Details')
                     ->url(fn($record) => CarryRequestResource::getUrl('view',
@@ -61,7 +60,8 @@ class ListCarryRequests extends ListRecords
                     ))
                     ->button()
                     ->color('info'),
-
+                $this->createTravelAction(Action::class)->label('Add Travel Info and Request')->visible(fn(Model $record) => $record->user_id != auth()->user()->id &&  auth()->user()->travels()->doesntExist()),
+                $this->iCanBringAction(Action::class)->visible(fn(Model $record) => $record->myOffer()->doesntExist()),
             ])
             ->filters([
                 SelectFilter::make('from_city_id')
