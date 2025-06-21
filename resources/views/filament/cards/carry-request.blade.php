@@ -1,7 +1,7 @@
 @php $record = $getRecord(); @endphp
 
 <div x-data="{ open: false }" class="w-full">
-    <div class="mb-2">
+    <div class="mb-2 mt-2">
         <!-- Left Column -->
         <div>
             <div class="flex justify-between">
