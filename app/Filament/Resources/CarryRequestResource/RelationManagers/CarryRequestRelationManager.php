@@ -49,6 +49,7 @@ class CarryRequestRelationManager extends RelationManager
                     ->label('Approve')
                     ->visible(fn($record) => $record->carryRequest->user_id == auth()->id())
                     ->requiresConfirmation()
+                    ->modalHeading('Once you approve your contact details will be shared with the traveller.')
                     ->action(fn($record) => $record->approve())
                     ->icon('heroicon-o-check-circle')
                     ->color('primary'),

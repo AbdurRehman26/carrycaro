@@ -42,6 +42,7 @@ class TravelCarryRequestRelationManager extends RelationManager
                     ->color('danger'),
                 Action::make('approve')
                     ->label('Approve')
+                    ->modalHeading('Once you approve your contact details will be shared with the requester.')
                     ->visible(fn($record) => $record->status == 'pending' && $record->travel->user_id == auth()->id() && $record->user_id != auth()->id())
                     ->requiresConfirmation()
                     ->action(fn($record) => $record->approve())
