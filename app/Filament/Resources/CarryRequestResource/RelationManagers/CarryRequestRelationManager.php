@@ -23,22 +23,13 @@ class CarryRequestRelationManager extends RelationManager
         return $table
             ->modifyQueryUsing(fn (Builder $query) => $query->whereNull('deleted_at'))
             ->recordTitleAttribute('reviewId')
-            ->columns([
+            ->columns(components: [
                 TextColumn::make('travel.fromCity.name')->formatStateUsing(fn(Model $model) => $model->travel->fromCity->name . ' (' . $model->travel->fromCity->country->name . ')')->label('From'),
                 TextColumn::make('travel.toCity.name')->formatStateUsing(fn(Model $model) => $model->travel->toCity->name . ' (' . $model->travel->toCity->country->name . ')')->label('To'),
                 TextColumn::make('travel.departure_date')->date()->label('Departure Date'),
                 TextColumn::make('travel.arrival_date')->date()->label('Arrival Date'),
                 TextColumn::make('travel.airline')->label('Airline'),
-                TextColumn::make('travel.notes')->limit(10)->tooltip(function (TextColumn $column): ?string {
-                    $state = $column->getState();
-
-                    if (strlen($state[0]) <= $column->getCharacterLimit()) {
-                        return null;
-                    }
-
-                    // Only render the tooltip if the column content exceeds the length limit.
-                    return $state[0];
-                })->label('Note'),
+                TextColumn::make('travel.notes')->limit(10)->tooltip(fn($record) => $record->notes)->label('Note'),
                 TextColumn::make('travel.user.name'),
                 TextColumn::make('status')->badge(),
             ])->actions([
