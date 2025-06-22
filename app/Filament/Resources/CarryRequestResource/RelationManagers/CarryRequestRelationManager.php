@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\CarryRequestResource\RelationManagers;
 
+use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
@@ -28,7 +29,16 @@ class CarryRequestRelationManager extends RelationManager
                 TextColumn::make('travel.departure_date')->date()->label('Departure Date'),
                 TextColumn::make('travel.arrival_date')->date()->label('Arrival Date'),
                 TextColumn::make('travel.airline')->label('Airline'),
-                TextColumn::make('travel.notes')->label('Note'),
+                TextColumn::make('travel.notes')->limit(20)(function (TextEntry $column): ?string {
+                    $state = $column->getState();
+
+                    if (strlen($state[0]) <= $column->getCharacterLimit()) {
+                        return null;
+                    }
+
+                    // Only render the tooltip if the column content exceeds the length limit.
+                    return $state[0];
+                })->label('Note'),
                 TextColumn::make('travel.user.name'),
                 TextColumn::make('status')->badge(),
             ])->actions([

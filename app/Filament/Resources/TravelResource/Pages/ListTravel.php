@@ -15,6 +15,7 @@ use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\Layout\Split;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Enums\ActionsPosition;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
@@ -73,12 +74,12 @@ class ListTravel extends ListRecords
 
                     Split::make([
                         TextColumn::make('weight_available')->suffix(' Kg')->prefix('Weight Available: ')
-                            ->size('lg')->label('Available Weight'),
-                        TextColumn::make('weight_price')->prefix('Price per weight: '),
+                            ->badge()->label('Available Weight'),
+                        TextColumn::make('weight_price')->badge()->prefix('Price per weight: '),
                     ]),
 
                     TextColumn::make('offers_count')
-                        ->suffix('  carry offers')
+                        ->suffix('  carry requests')
                         ->badge()
                         ->color('info')
 //                        ->url(fn($record) => TravelResource::getUrl('view', [
@@ -111,7 +112,7 @@ class ListTravel extends ListRecords
                     ))
                     ->button()
                     ->color('info')
-            ])
+            ])->actionsPosition(ActionsPosition::BeforeColumns)
             ->filters([
                 SelectFilter::make('from_city_id')
                     ->label('From City')

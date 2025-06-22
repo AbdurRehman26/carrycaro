@@ -20,15 +20,13 @@ class ViewTravel extends ViewRecord
                 Section::make('Details')
                     ->schema([
                         Grid::make(2)->schema([
-                            TextEntry::make('fromCity.country.name')->color('primary')->label('From Country'),
-                            TextEntry::make('toCity.country.name')->color('primary')->label('To Country'),
-                            TextEntry::make('fromCity.name')->color('primary')->label('From City'),
-                            TextEntry::make('toCity.name')->color('primary')->label('To City'),
+                            TextEntry::make('fromCity')->color('primary')->formatStateUsing(fn($record) => $record->fromCity->name  . ' - ' .  $record->fromCity->country->name)->label('From'),
+                            TextEntry::make('toCity')->color('primary')->formatStateUsing(fn($record) => $record->toCity->name  . ' - ' .  $record->toCity->country->name)->label('To'),
                             TextEntry::make('departure_date')->color('primary')->date(),
                             TextEntry::make('arrival_date')->color('primary')->date(),
                             TextEntry::make('weight_available')->color('primary')->suffix(' Kg'),
                             TextEntry::make('weight_price')->color('primary'),
-                            TextEntry::make('updated_at')->label('Airline')->color('primary')->formatStateUsing(fn ($state, $record) => blank($record->notes) ? 'N/A' : $record->notes),
+                            TextEntry::make('updated_at')->label('Airline')->color('primary')->formatStateUsing(fn ($state, $record) => blank($record->airline) ? 'N/A' : $record->airline),
                             TextEntry::make('id')->label('Notes')->color('primary')->formatStateUsing(fn ($state, $record) => blank($record->notes) ? 'N/A' : $record->notes),
                             TextEntry::make('created_at')->color('primary')->label('Created')->since(),
                             TextEntry::make('user.name')->color('primary')->label('User'),
