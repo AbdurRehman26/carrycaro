@@ -31,7 +31,12 @@ class CarryRequestRelationManager extends RelationManager
                 TextColumn::make('travel.airline')->label('Airline'),
                 TextColumn::make('travel.notes')->limit(10)->tooltip(fn($record) => $record->travel->notes)->label('Note'),
                 TextColumn::make('travel.user.name'),
-                TextColumn::make('status')->badge(),
+                TextColumn::make('status')->badge()->color(fn (string $state) => match ($state) {
+                    'pending' => 'warning',
+                    'approved' => 'success',
+                    'banned' => 'danger',
+                    default => 'gray',
+                }),
             ])->actions([
                 Action::make('delete')
                     ->label('Delete')
