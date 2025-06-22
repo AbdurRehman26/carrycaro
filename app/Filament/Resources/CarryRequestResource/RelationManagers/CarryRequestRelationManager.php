@@ -29,7 +29,7 @@ class CarryRequestRelationManager extends RelationManager
                 TextColumn::make('travel.departure_date')->date()->label('Departure Date'),
                 TextColumn::make('travel.arrival_date')->date()->label('Arrival Date'),
                 TextColumn::make('travel.airline')->label('Airline'),
-                TextColumn::make('travel.notes')->limit(20)(function (TextEntry $column): ?string {
+                TextColumn::make('travel.notes')->limit(20)(function (TextColumn $column): ?string {
                     $state = $column->getState();
 
                     if (strlen($state[0]) <= $column->getCharacterLimit()) {
