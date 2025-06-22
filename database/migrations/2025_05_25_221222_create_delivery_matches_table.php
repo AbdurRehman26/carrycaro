@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\GeneralStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,7 +14,7 @@ return new class extends Migration
             $table->foreignId('carry_request_id')->constrained()->onDelete('cascade');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('travel_id')->constrained('travels')->onDelete('cascade');
-            $table->string('status')->default('pending');
+            $table->string('status')->default(GeneralStatus::PENDING);
             $table->text('message')->nullable();
             $table->softDeletes();
             $table->timestamps();

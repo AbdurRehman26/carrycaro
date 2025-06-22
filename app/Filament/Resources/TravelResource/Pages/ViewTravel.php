@@ -17,7 +17,7 @@ class ViewTravel extends ViewRecord
     {
         return $infolist
             ->schema([
-                Section::make('Details')
+                Section::make('Details (Only approved travellers and requesters can see each others details.')
                     ->schema([
                         Grid::make(2)->schema([
                             TextEntry::make('fromCity')->color('primary')->formatStateUsing(fn($record) => $record->fromCity->name  . ' - ' .  $record->fromCity->country->name)->label('From'),
@@ -30,6 +30,16 @@ class ViewTravel extends ViewRecord
                             TextEntry::make('id')->label('Notes')->color('primary')->formatStateUsing(fn ($state, $record) => blank($record->notes) ? 'N/A' : $record->notes),
                             TextEntry::make('created_at')->color('primary')->label('Created')->since(),
                             TextEntry::make('user.name')->color('primary')->label('User'),
+                            TextEntry::make('user.phone_number')
+                                ->formatStateUsing(fn($record, $state) => $record->myApprovedOfferExists() || auth()->user()->id == $record->user_id ? $state : '-')
+                                ->color('primary')
+                                ->label('Phone Number'),
+                            TextEntry::make('user.facebook_profile')
+                                ->formatStateUsing(fn($record, $state) => $record->myApprovedOfferExists() || auth()->user()->id == $record->user_id ? $state : '-')
+                                ->url(fn ($record, $state) => $record->myApprovedOfferExists() || auth()->user()->id == $record->user_id ? $state : '-')
+                                ->icon('heroicon-o-link')
+                                ->color('primary')
+                                ->label('Facebook Profile'),
                         ]),
                     ]),
             ]);

@@ -151,7 +151,6 @@ trait CarryRequestMethods
                     ]);
                 }
 
-                // Optionally, you can add a notification here
                 \Filament\Notifications\Notification::make()
                     ->title('Carry Request Added')
                     ->body('Your carry request has been added successfully.')

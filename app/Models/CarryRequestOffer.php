@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\GeneralStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -33,4 +34,13 @@ class CarryRequestOffer extends Model
 
     public function messages(): HasMany { return $this->hasMany(Message::class); }
     public function user(): BelongsTo { return $this->belongsTo(User::class); }
+
+    public function canSeeEachOtherDetails(): bool
+    {
+        return $this->status == GeneralStatus::APPROVED &&
+            (
+                auth()->user()->id == $this->carryRequest->user_id  ||
+                auth()->user()->id == $this->travel->user_id
+            );
+    }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\CarryRequestResource\RelationManagers;
 
-use Filament\Infolists\Components\TextEntry;
+use App\Enums\GeneralStatus;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
@@ -31,9 +31,17 @@ class CarryRequestRelationManager extends RelationManager
                 TextColumn::make('travel.airline')->label('Airline'),
                 TextColumn::make('travel.notes')->limit(10)->tooltip(fn($record) => $record->travel->notes)->label('Note'),
                 TextColumn::make('travel.user.name'),
+                TextColumn::make('travel.user.phone_number')
+                    ->formatStateUsing(fn($record, $state) => $record->canSeeEachOtherDetails() ? $state : 'Not Authorized')
+                    ->label('Phone'),
+                TextColumn::make('travel.user.facebook_profile')
+                    ->formatStateUsing(fn($record, $state) => $record->canSeeEachOtherDetails() ? 'Link' : 'Not Authorized' )
+                    ->url(fn ($record, $state) => $record->canSeeEachOtherDetails() ? $state : '')
+                    ->icon('heroicon-o-link')
+                    ->label('Facebook Url'),
                 TextColumn::make('status')->badge()->color(fn (string $state) => match ($state) {
-                    'pending' => 'warning',
-                    'approved' => 'success',
+                    GeneralStatus::PENDING => 'warning',
+                    GeneralStatus::APPROVED => 'success',
                     'banned' => 'danger',
                     default => 'gray',
                 }),
@@ -47,7 +55,7 @@ class CarryRequestRelationManager extends RelationManager
                     ->color('danger'),
                 Action::make('approve')
                     ->label('Approve')
-                    ->visible(fn($record) => $record->carryRequest->user_id == auth()->id())
+                    ->visible(fn($record) => $record->carryRequest->user_id == auth()->id() && $record->status == GeneralStatus::PENDING)
                     ->requiresConfirmation()
                     ->modalHeading('Once you approve your contact details will be shared with the traveller.')
                     ->action(fn($record) => $record->approve())
@@ -55,7 +63,7 @@ class CarryRequestRelationManager extends RelationManager
                     ->color('primary'),
                 Action::make('reject')
                     ->label('Reject')
-                    ->visible(fn($record) => $record->carryRequest->user_id == auth()->id())
+                    ->visible(fn($record) => $record->carryRequest->user_id == auth()->id() && $record->status == GeneralStatus::PENDING)
                     ->requiresConfirmation()
                     ->action(fn($record) => $record->rejected())
                     ->icon('heroicon-o-x-circle')
