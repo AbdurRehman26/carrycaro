@@ -173,6 +173,7 @@ trait CarryRequestMethods
             ->color(Color::Purple)
             ->form([
                 Select::make('travel_id')
+                    ->required()
                     ->label('Select Travel')
                     ->visible(!empty($travelLists))
                     ->options($travelLists)
