@@ -51,7 +51,12 @@ trait CarryRequestMethods
                                 TextInput::make('receiver_number')->label('Receiver Number')->visible(fn($get) => !$get('for_self')),
 
                                 TextInput::make('price')->placeholder('Price along with currency (euro, dollar etc)')->label('Price with currency - willing to pay (Approx.)')->required(),
-                                TextInput::make('weight')->numeric()->placeholder('Approx Weight (kg)')->required()->label('Delivery Weight (Kg)'),
+                                TextInput::make('weight')
+                                    ->numeric()
+                                    ->minValue(0.1)
+                                    ->placeholder('Approx Weight (kg)')
+                                    ->label('Delivery Weight (Kg)')
+                                    ->required(),
 
                                 Select::make('from_city_id')
                                     ->label('City')

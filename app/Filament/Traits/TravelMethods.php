@@ -65,8 +65,8 @@ trait TravelMethods
                             ->placeholder('Available weight (kg)')
                             ->numeric()
                             ->required()
-                            ->minValue(0)
-                            ->default(0),
+                            ->minValue(0.1)
+                            ->default(0.1),
                         TextInput::make('weight_price')
                             ->required()
                             ->placeholder('Price per kg (optional) with currency')
