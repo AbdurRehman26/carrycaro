@@ -29,7 +29,7 @@ class CarryRequestRelationManager extends RelationManager
                 TextColumn::make('travel.departure_date')->date()->label('Departure Date'),
                 TextColumn::make('travel.arrival_date')->date()->label('Arrival Date'),
                 TextColumn::make('travel.airline')->label('Airline'),
-                TextColumn::make('travel.notes')->limit(10)->tooltip(fn($record) => $record->notes)->label('Note'),
+                TextColumn::make('travel.notes')->limit(10)->tooltip(fn($record) => $record->travel->notes)->label('Note'),
                 TextColumn::make('travel.user.name'),
                 TextColumn::make('status')->badge(),
             ])->actions([
