@@ -184,8 +184,8 @@ class ListTravel extends ListRecords
             ])
             ->filtersLayout(FiltersLayout::AboveContent)
             ->contentGrid([
-                'md' => 2,
-                'xl' => 2,
+                'md' => 3,
+                'xl' => 3,
             ]);
     }
 }
