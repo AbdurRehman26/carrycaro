@@ -7,6 +7,8 @@ use Filament\Actions\Action;
 use Filament\Forms\Components\Component;
 use Filament\Forms\Components\TextInput;
 use Filament\Pages\Auth\Register as BaseRegister;
+use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
+use Ysfkaya\FilamentPhoneInput\PhoneInputNumberType;
 
 class Register extends BaseRegister
 {
@@ -35,11 +37,11 @@ class Register extends BaseRegister
 
     protected function getPhoneFormComponent(): Component
     {
-        return TextInput::make('phone_number')->label('Phone Number (Optional)')
-            ->tel()
-            ->maxLength(15)
-            ->placeholder('+4695XXXXXXXX')
-            ->required(false);
+        return PhoneInput::make('phone_number')
+            ->countryStatePath('phone_country')
+            ->displayNumberFormat(PhoneInputNumberType::NATIONAL)
+            ->strictMode()
+            ->label('Phone Number (Optional)');
     }
 
     protected function getFacebookProfileFormComponent(): Component

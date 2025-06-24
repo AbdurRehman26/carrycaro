@@ -10,6 +10,8 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Ysfkaya\FilamentPhoneInput\PhoneInputNumberType;
+use Ysfkaya\FilamentPhoneInput\Tables\PhoneColumn;
 
 class CarryRequestRelationManager extends RelationManager
 {
@@ -32,7 +34,8 @@ class CarryRequestRelationManager extends RelationManager
                 TextColumn::make('travel.airline')->label('Airline'),
                 TextColumn::make('travel.notes')->limit(10)->tooltip(fn($record) => $record->travel->notes)->label('Note'),
                 TextColumn::make('travel.user.name'),
-                TextColumn::make('travel.user.phone_number')
+                PhoneColumn::make('travel.user.phone_number')
+                    ->displayFormat(PhoneInputNumberType::NATIONAL)
                     ->formatStateUsing(fn($record, $state) => $record->canSeeEachOtherDetails() ? $state : 'Not Authorized')
                     ->label('Phone'),
                 TextColumn::make('travel.user.facebook_profile')

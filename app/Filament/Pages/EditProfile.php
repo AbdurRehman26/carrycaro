@@ -4,6 +4,8 @@ namespace App\Filament\Pages;
 
 use Filament\Forms\Components\Component;
 use Filament\Forms\Components\TextInput;
+use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
+use Ysfkaya\FilamentPhoneInput\PhoneInputNumberType;
 
 class EditProfile extends \Filament\Pages\Auth\EditProfile
 {
@@ -30,11 +32,11 @@ class EditProfile extends \Filament\Pages\Auth\EditProfile
 
     protected function getPhoneFormComponent(): Component
     {
-        return TextInput::make('phone_number')->label('Phone Number (Optional)')
-            ->tel()
-            ->maxLength(15)
-            ->placeholder('+4695XXXXXXXX')
-            ->required(false);
+        return PhoneInput::make('phone_number')
+            ->countryStatePath('phone_country')
+            ->displayNumberFormat(PhoneInputNumberType::NATIONAL)
+            ->strictMode()
+            ->label('Phone Number (Optional)');
     }
 
     protected function getFacebookProfileFormComponent(): Component

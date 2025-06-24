@@ -35,7 +35,8 @@ class User extends Authenticatable implements MustVerifyEmail, UserContract, Fil
         'email_verified_at',
         'profile_image',
         'phone_number',
-        'facebook_profile'
+        'facebook_profile',
+        'super_admin'
     ];
 
     protected $hidden = [
@@ -52,6 +53,13 @@ class User extends Authenticatable implements MustVerifyEmail, UserContract, Fil
     {
         return true;
     }
+
+
+    public function isSuperAdmin(): bool
+    {
+        return !! auth()->user()->super_admin;
+    }
+
 
     public function canAccessPanel(Panel $panel): bool
     {
