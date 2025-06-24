@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\CarryRequestResource\RelationManagers;
 
 use App\Enums\GeneralStatus;
+use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
@@ -50,7 +51,12 @@ class CarryRequestRelationManager extends RelationManager
                     ->label('Delete')
                     ->visible(fn($record) => $record->travel->user_id == auth()->id())
                     ->requiresConfirmation()
-                    ->action(fn($record) => $record->delete())
+                    ->action(function($record){
+                        $record->delete();
+                        Notification::make()
+                            ->title('Carry Request Deleted')
+                            ->send();
+                    })
                     ->icon('heroicon-o-x-circle')
                     ->color('danger'),
                 Action::make('approve')
@@ -58,14 +64,27 @@ class CarryRequestRelationManager extends RelationManager
                     ->visible(fn($record) => $record->carryRequest->user_id == auth()->id() && $record->status == GeneralStatus::PENDING)
                     ->requiresConfirmation()
                     ->modalHeading('Once you approve your contact details will be shared with the traveller.')
-                    ->action(fn($record) => $record->approve())
+                    ->action(function($record){
+                        $record->approve();
+
+                        Notification::make()
+                            ->title('Carry Request Approved')
+                            ->sendToDatabase($record->carryRequest->user)
+                            ->send();
+                    })
                     ->icon('heroicon-o-check-circle')
                     ->color('primary'),
                 Action::make('reject')
                     ->label('Reject')
                     ->visible(fn($record) => $record->carryRequest->user_id == auth()->id() && $record->status == GeneralStatus::PENDING)
                     ->requiresConfirmation()
-                    ->action(fn($record) => $record->rejected())
+                    ->action(function($record){
+                        $record->rejected();
+                        Notification::make()
+                            ->title('Carry Request Approved')
+                            ->sendToDatabase($record->carryRequest->user)
+                            ->send();
+                    })
                     ->icon('heroicon-o-x-circle')
                     ->color('danger'),
             ]);
