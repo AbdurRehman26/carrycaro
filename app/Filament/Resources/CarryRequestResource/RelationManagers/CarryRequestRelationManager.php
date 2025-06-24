@@ -66,8 +66,8 @@ class CarryRequestRelationManager extends RelationManager
                     ->modalHeading('Once you approve your contact details will be shared with the traveller.')
                     ->action(function($record){
                         $record->approve();
-
                         Notification::make()
+                            ->success()
                             ->title('Carry Request Approved')
                             ->sendToDatabase($record->carryRequest->user)
                             ->send();
@@ -81,6 +81,7 @@ class CarryRequestRelationManager extends RelationManager
                     ->action(function($record){
                         $record->rejected();
                         Notification::make()
+                            ->danger()
                             ->title('Carry Request Approved')
                             ->sendToDatabase($record->carryRequest->user)
                             ->send();
