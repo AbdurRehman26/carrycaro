@@ -15,8 +15,8 @@ class DatabaseSeeder extends Seeder
         DB::disableQueryLog();
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         User::query()->truncate();
-        Country::query()->truncate();
-        City::query()->truncate();
+//        Country::query()->truncate();
+//        City::query()->truncate();
 
         /** @var User $user */
         User::factory()->create([
@@ -34,10 +34,10 @@ class DatabaseSeeder extends Seeder
 
         User::factory()->count(20)->create();
 
-        $this->call([
-            CountrySeeder::class,
-            CitySeeder::class,
-        ]);
+//        $this->call([
+//            CountrySeeder::class,
+//            CitySeeder::class,
+//        ]);
 
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
         DB::enableQueryLog();

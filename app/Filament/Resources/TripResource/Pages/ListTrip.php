@@ -2,9 +2,7 @@
 
 namespace App\Filament\Resources\TripResource\Pages;
 
-use App\Filament\Resources\MyTripResource;
 use App\Filament\Resources\TripResource;
-use App\Filament\Resources\TripResource\RelationManagers\TripCarryRequestRelationManager;
 use App\Filament\Traits\CarryRequestMethods;
 use App\Filament\Traits\TripMethods;
 use App\Models\City;
