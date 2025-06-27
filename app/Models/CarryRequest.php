@@ -55,9 +55,9 @@ class CarryRequest extends Model
     public function myApprovedOfferExists()
     {
         return $this->join('carry_request_offers', 'carry_request_offers.carry_request_id', 'carry_requests.id')
-        ->join('travels', 'travels.id', 'carry_request_offers.travel_id')
+        ->join('trips', 'trips.id', 'carry_request_offers.trip_id')
         ->where(function($query){
-            $query->where('travels.user_id', auth()->user()->id)
+            $query->where('trips.user_id', auth()->user()->id)
                 ->orWhere('carry_request_offers.user_id', auth()->user()->id);
         })
         ->where('carry_request_offers.status', GeneralStatus::APPROVED)

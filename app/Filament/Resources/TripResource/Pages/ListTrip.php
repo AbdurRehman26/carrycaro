@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Filament\Resources\TravelResource\Pages;
+namespace App\Filament\Resources\TripResource\Pages;
 
-use App\Filament\Resources\MyTravelResource;
-use App\Filament\Resources\TravelResource;
-use App\Filament\Resources\TravelResource\RelationManagers\TravelCarryRequestRelationManager;
+use App\Filament\Resources\MyTripResource;
+use App\Filament\Resources\TripResource;
+use App\Filament\Resources\TripResource\RelationManagers\TripCarryRequestRelationManager;
 use App\Filament\Traits\CarryRequestMethods;
-use App\Filament\Traits\TravelMethods;
+use App\Filament\Traits\TripMethods;
 use App\Models\City;
 use Filament\Actions\CreateAction;
 use Filament\Forms\Components\DatePicker;
@@ -22,16 +22,16 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
-class ListTravel extends ListRecords
+class ListTrip extends ListRecords
 {
-    use TravelMethods, CarryRequestMethods;
+    use TripMethods, CarryRequestMethods;
 
-    protected static string $resource = TravelResource::class;
+    protected static string $resource = TripResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            $this->createTravelAction(CreateAction::class)->createAnother(false)
+            $this->createTripAction(CreateAction::class)->createAnother(false)
         ];
     }
 
@@ -97,7 +97,7 @@ class ListTravel extends ListRecords
             ])->actions([
                 $this->createCarryRequestAction(Action::class)->color('info')
                     ->visible(fn ($record) => $record->user_id !== auth()->user()->id && $record
-                            ->join('carry_request_offers', 'carry_request_offers.travel_id', 'travels.id')
+                            ->join('carry_request_offers', 'carry_request_offers.trip_id', 'trips.id')
                             ->join('carry_requests', 'carry_requests.id', 'carry_request_offers.carry_request_id')
                             ->where('carry_requests.user_id', auth()->user()->id)
                             ->orWhere('carry_request_offers.user_id', auth()->user()->id)
@@ -105,7 +105,7 @@ class ListTravel extends ListRecords
 
                 Action::make('view_details')
                     ->label('View Details')
-                    ->url(fn($record) => TravelResource::getUrl('view',
+                    ->url(fn($record) => TripResource::getUrl('view',
                         [
                             'record' => $record
                         ]

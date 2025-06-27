@@ -57,7 +57,7 @@ class User extends Authenticatable implements MustVerifyEmail, UserContract, Fil
 
     public function isSuperAdmin(): bool
     {
-        return !! auth()->user()->super_admin;
+        return !! auth()->user()->is_admin;
     }
 
 
@@ -66,8 +66,8 @@ class User extends Authenticatable implements MustVerifyEmail, UserContract, Fil
         return true;
     }
 
-    public function travels(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function trips(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        return $this->hasMany(Travel::class);
+        return $this->hasMany(Trip::class);
     }
 }

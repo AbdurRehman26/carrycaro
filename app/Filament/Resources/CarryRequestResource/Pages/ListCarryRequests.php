@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\CarryRequestResource\Pages;
 
 use App\Filament\Resources\CarryRequestResource;
-use App\Filament\Traits\TravelMethods;
+use App\Filament\Traits\TripMethods;
 use App\Models\City;
 use Filament\Actions\CreateAction;
 use Filament\Forms\Components\DatePicker;
@@ -23,7 +23,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ListCarryRequests extends ListRecords
 {
-    use CarryRequestMethods, TravelMethods;
+    use CarryRequestMethods, TripMethods;
 
     protected static string $resource = CarryRequestResource::class;
 
@@ -59,7 +59,7 @@ class ListCarryRequests extends ListRecords
                     ))
                     ->button()
                     ->color('info'),
-                $this->createTravelAction(Action::class)->label('Add Travel Info and Request')->visible(fn(Model $record) => $record->user_id != auth()->user()->id &&  auth()->user()->travels()->doesntExist()),
+                $this->createTripAction(Action::class)->label('Add Trip Info and Request')->visible(fn(Model $record) => $record->user_id != auth()->user()->id &&  auth()->user()->trips()->doesntExist()),
                 $this->iCanBringAction(Action::class)->visible(fn(Model $record) => $record->myOffer()->doesntExist()),
                 Action::make('view_your_offer')
                     ->label('Already Offered')

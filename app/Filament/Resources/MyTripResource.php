@@ -2,21 +2,21 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\MyTravelResource\Pages;
-use App\Filament\Resources\TravelResource\Pages\ViewTravel;
-use App\Models\Travel;
+use App\Filament\Resources\MyTripResource\Pages;
+use App\Filament\Resources\TripResource\Pages\ViewTrip;
+use App\Models\Trip;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
-class MyTravelResource extends Resource
+class MyTripResource extends Resource
 {
-    protected static ?string $model = Travel::class;
+    protected static ?string $model = Trip::class;
 
     protected static ?string $navigationGroup = 'Your Requests';
 
-    protected static ?string $label = 'My Travel';
+    protected static ?string $label = 'My Trip';
 
     protected static ?string $navigationIcon = 'heroicon-o-rocket-launch';
 
@@ -54,8 +54,8 @@ class MyTravelResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListMyTravel::route('/'),
-            'view' => ViewTravel::route('/{record}'),
+            'index' => Pages\ListMyTrip::route('/'),
+            'view' => ViewTrip::route('/{record}'),
         ];
     }
 }

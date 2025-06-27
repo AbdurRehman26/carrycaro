@@ -19,7 +19,15 @@ class DatabaseSeeder extends Seeder
         City::query()->truncate();
 
         /** @var User $user */
-        $user = User::factory()->create([
+        User::factory()->create([
+            'name' => 'Kazmi',
+            'email' => 'sydabdrehman@gmail.com',
+            'password' => bcrypt('sydabdrehman@gmail.com'),
+            'is_admin' => true,
+        ]);
+
+        /** @var User $user */
+        User::factory()->create([
             'name' => 'Test User',
             'email' => 'user@example.com',
         ]);

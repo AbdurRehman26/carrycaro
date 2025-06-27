@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\TravelResource\RelationManagers;
+namespace App\Filament\Resources\TripResource\RelationManagers;
 
 use App\Enums\GeneralStatus;
 use Filament\Notifications\Notification;
@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Ysfkaya\FilamentPhoneInput\PhoneInputNumberType;
 use Ysfkaya\FilamentPhoneInput\Tables\PhoneColumn;
 
-class TravelCarryRequestRelationManager extends RelationManager
+class TripCarryRequestRelationManager extends RelationManager
 {
     protected static string $relationship = 'offers';
 
@@ -55,27 +55,27 @@ class TravelCarryRequestRelationManager extends RelationManager
                 Action::make('approve')
                     ->label('Approve')
                     ->modalHeading('Once you approve your contact details will be shared with the requester.')
-                    ->visible(fn($record) => $record->status == GeneralStatus::PENDING && $record->travel->user_id == auth()->id() && $record->user_id != auth()->id())
+                    ->visible(fn($record) => $record->status == GeneralStatus::PENDING && $record->trip->user_id == auth()->id() && $record->user_id != auth()->id())
                     ->requiresConfirmation()
                     ->action(function($record){
                         Notification::make()
                             ->success()
                             ->title('Carry Offer Accepted')
-                            ->sendToDatabase($record->travel->user)
+                            ->sendToDatabase($record->trip->user)
                             ->send();
                     })
                     ->icon('heroicon-o-check-circle')
                     ->color('primary'),
                 Action::make('reject')
                     ->label('Reject')
-                    ->visible(fn($record) => $record->status == GeneralStatus::PENDING && $record->travel->user_id == auth()->id() && $record->user_id != auth()->id())
+                    ->visible(fn($record) => $record->status == GeneralStatus::PENDING && $record->trip->user_id == auth()->id() && $record->user_id != auth()->id())
                     ->requiresConfirmation()
                     ->action(function($record){
                         $record->reject();
                         Notification::make()
                             ->danger()
                             ->title('Carry Offer Rejected')
-                            ->sendToDatabase($record->travel->user)
+                            ->sendToDatabase($record->trip->user)
                             ->send();
 
                     })

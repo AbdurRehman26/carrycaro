@@ -5,19 +5,19 @@ namespace App\Filament\Traits;
 use App\Models\CarryRequest;
 use App\Models\CarryRequestOffer;
 use App\Models\City;
-use App\Models\Travel;
+use App\Models\Trip;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 
-trait TravelMethods
+trait TripMethods
 {
-    protected function createTravelAction($action)
+    protected function createTripAction($action)
     {
         return
-            $action::make('create_travel')
+            $action::make('create_trip')
                 ->slideOver()
                 ->form([
                     Fieldset::make()->schema([
@@ -65,8 +65,7 @@ trait TravelMethods
                             ->placeholder('Available weight (kg)')
                             ->numeric()
                             ->required()
-                            ->minValue(0.1)
-                            ->default(0.1),
+                            ->minValue(0.1),
                         TextInput::make('weight_price')
                             ->required()
                             ->placeholder('Price per kg (optional) with currency')
@@ -77,13 +76,13 @@ trait TravelMethods
                             ->label('Notes (optional)')
                     ]),
                 ])
-                ->label('Add Travel Information')
+                ->label('Add Trip Information')
                 ->action(function (CarryRequest $carryRequest, array $data) {
 
                     $fromCountryId = City::query()->find($data['from_city_id'])->country_id;
                     $toCountryId = City::query()->find($data['to_city_id'])->country_id;
 
-                    $travel = Travel::query()->create(
+                    $trip = Trip::query()->create(
                         array_merge(
                             [
                                 ...$data
@@ -97,14 +96,14 @@ trait TravelMethods
 
                     if(!empty($carryRequest->id)){
                         CarryRequestOffer::query()->create([
-                            'travel_id' => $travel->id,
+                            'trip_id' => $trip->id,
                             'carry_request_id' => $carryRequest->id,
                             'user_id' => auth()->id(),
                         ]);
                     }
 
-                    Notification::make('Travel Information Added')
-                        ->body('Your travel information has been added successfully.')
+                    Notification::make('Trip Information Added')
+                        ->body('Your trip information has been added successfully.')
                         ->success()
                         ->send();
                 });

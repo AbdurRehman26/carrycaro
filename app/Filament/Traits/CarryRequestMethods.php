@@ -7,7 +7,7 @@ use App\Models\CarryRequestOffer;
 use App\Models\CarryRequest;
 use App\Models\CarryRequestProduct;
 use App\Models\Product;
-use App\Models\Travel;
+use App\Models\Trip;
 use Carbon\Carbon;
 use Filament\Actions\MountableAction;
 use Filament\Forms\Components\DatePicker;
@@ -53,7 +53,6 @@ trait CarryRequestMethods
                                 TextInput::make('price')->placeholder('Price along with currency (euro, dollar etc)')->label('Price with currency - willing to pay (Approx.)')->required(),
                                 TextInput::make('weight')
                                     ->numeric()
-                                    ->minValue(0.1)
                                     ->placeholder('Approx Weight (kg)')
                                     ->label('Delivery Weight (Kg)')
                                     ->required(),
@@ -107,7 +106,7 @@ trait CarryRequestMethods
                     ])
             ])
             ->slideOver()
-            ->action(function (Travel $travel, array $data) {
+            ->action(function (Trip $trip, array $data) {
                 if($data['add_product'] ?? false) {
                     $productData = [
                         'product_name' => $data['product_name'],
@@ -143,9 +142,9 @@ trait CarryRequestMethods
                     ]);
                 }
 
-                if(!empty($travel->id)){
+                if(!empty($trip->id)){
                     CarryRequestOffer::query()->create([
-                        'travel_id' => $travel->id,
+                        'trip_id' => $trip->id,
                         'carry_request_id' => $carryRequest->id,
                         'user_id' => auth()->id(),
                     ]);
@@ -161,7 +160,7 @@ trait CarryRequestMethods
 
     public function iCanBringAction($actionClass): MountableAction
     {
-        $travelLists = Travel::query()
+        $tripLists = Trip::query()
             ->where('user_id', auth()->id())
             ->get()
             ->mapWithKeys(function ($record) {
@@ -171,19 +170,19 @@ trait CarryRequestMethods
             })->toArray();
 
         return $actionClass::make('i_can_bring')
-            ->authorize(fn($record) => $record->user_id != auth()->id() && !empty($travelLists))
+            ->authorize(fn($record) => $record->user_id != auth()->id() && !empty($tripLists))
             ->label('I can take with me')
             ->icon('heroicon-o-hand-raised')
             ->color(Color::Purple)
             ->form([
-                Select::make('travel_id')
+                Select::make('trip_id')
                     ->required()
-                    ->label('Select Travel')
-                    ->visible(!empty($travelLists))
-                    ->options($travelLists)
+                    ->label('Select Trip')
+                    ->visible(!empty($tripLists))
+                    ->options($tripLists)
                     ->searchable(),
                 TextInput::make('message')
-                    ->visible(!empty($travelLists))
+                    ->visible(!empty($tripLists))
                     ->label('Additional Information')
                     ->placeholder('Any additional information you want to provide'),
             ])
@@ -195,7 +194,7 @@ trait CarryRequestMethods
             ->action(function (array $data, CarryRequest $record) {
 
                 CarryRequestOffer::query()->create([
-                    'travel_id' => $data['travel_id'],
+                    'trip_id' => $data['trip_id'],
                     'carry_request_id' => $record->id,
                     'message' => $data['message'] ?? '',
                     'user_id' => auth()->id(),

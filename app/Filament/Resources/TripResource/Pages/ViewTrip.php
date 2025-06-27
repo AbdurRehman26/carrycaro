@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Filament\Resources\TravelResource\Pages;
+namespace App\Filament\Resources\TripResource\Pages;
 
-use App\Filament\Resources\TravelResource;
+use App\Filament\Resources\TripResource;
 use Filament\Infolists\Components\Grid;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Pages\ViewRecord;
 
-class ViewTravel extends ViewRecord
+class ViewTrip extends ViewRecord
 {
-    protected static string $resource = TravelResource::class;
+    protected static string $resource = TripResource::class;
 
     public function infolist(Infolist $infolist): Infolist
     {

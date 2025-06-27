@@ -13,12 +13,12 @@ class CarryRequestOffer extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'carry_request_id', 'travel_id', 'status', 'message', 'user_id'
+        'carry_request_id', 'trip_id', 'status', 'message', 'user_id'
     ];
 
     public function CarryRequest(): BelongsTo { return $this->belongsTo(CarryRequest::class); }
 
-    public function travel(): BelongsTo { return $this->belongsTo(Travel::class); }
+    public function trip(): BelongsTo { return $this->belongsTo(Trip::class); }
 
     public function approve(): void
     {
@@ -40,7 +40,7 @@ class CarryRequestOffer extends Model
         return $this->status == GeneralStatus::APPROVED &&
             (
                 auth()->user()->id == $this->carryRequest->user_id  ||
-                auth()->user()->id == $this->travel->user_id
+                auth()->user()->id == $this->trip->user_id
             );
     }
 }

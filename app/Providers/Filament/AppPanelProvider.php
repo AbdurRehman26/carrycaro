@@ -5,13 +5,10 @@ namespace App\Providers\Filament;
 use App\Filament\Pages\Auth\Login;
 use App\Filament\Pages\Auth\Register;
 use App\Filament\Pages\EditProfile;
-use App\Filament\Resources\MyCarryRequestResource;
-use App\Filament\Resources\MyTravelResource;
 use Exception;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Navigation\MenuItem;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -75,17 +72,6 @@ class AppPanelProvider extends PanelProvider
             )
             ->authMiddleware([
                 Authenticate::class,
-            ])
-//            ->userMenuItems([
-//                'my-travels' => MenuItem::make()
-//                    ->label('My Travels')
-//                    ->icon('heroicon-o-briefcase') // optional icon
-//                    ->url(fn() => MyTravelResource::getUrl('index')),
-//                'my-carry-requests' => MenuItem::make()
-//                    ->label('My Carry Requests')
-//                    ->icon('heroicon-o-truck') // optional icon
-//                    ->url(fn() => MyCarryRequestResource::getUrl('index')),
-//            ])
-            ;
+            ]);
     }
 }
