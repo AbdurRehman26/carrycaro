@@ -32,7 +32,10 @@ class ViewCarryRequest extends ViewRecord
             ->schema([
                 Section::make('Carry Request Info (Only approved travellers and requesters can see each others details.')
                     ->schema([
-                        Grid::make(2)->schema([
+                        Grid::make([
+                            'sm' => 2,
+                            'md' => 2
+                        ])->schema([
                             TextEntry::make('fromCity.name')->color('primary')->formatStateUsing(fn(Model $model) => $model->fromCity->name . ' (' . $model->fromCity->country->name . ')')->label('From'),
                             TextEntry::make('toCity.name')->color('primary')->formatStateUsing(fn(Model $model) => $model->toCity->name . ' (' . $model->toCity->country->name . ')')->label('To'),
                             TextEntry::make('preferred_date')->color('primary')->label('Preferred Date')->date(),

@@ -7,6 +7,10 @@
 .fi-simple-main-ctn {
     @apply backdrop-blur-xl bg-emerald-100/10 rounded-xl shadow-2xl border border-white/20;
     padding: 0.5rem 5rem; /* Not supported by @apply due to shorthand */
+
+    @media screen and (max-width: 576px) {
+        padding: 28px;
+    }
 }
 
 .fi-simple-main {
