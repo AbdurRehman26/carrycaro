@@ -30,9 +30,12 @@ class ViewCarryRequest extends ViewRecord
     {
         return $infolist
             ->schema([
-                Section::make('Carry Request Info')
+                Section::make('Carry Request Info (Only approved travellers and requesters can see each others details.')
                     ->schema([
-                        Grid::make(2)->schema([
+                        Grid::make([
+                            'sm' => 2,
+                            'md' => 2
+                        ])->schema([
                             TextEntry::make('fromCity.name')->color('primary')->formatStateUsing(fn(Model $model) => $model->fromCity->name . ' (' . $model->fromCity->country->name . ')')->label('From'),
                             TextEntry::make('toCity.name')->color('primary')->formatStateUsing(fn(Model $model) => $model->toCity->name . ' (' . $model->toCity->country->name . ')')->label('To'),
                             TextEntry::make('preferred_date')->color('primary')->label('Preferred Date')->date(),
@@ -41,13 +44,23 @@ class ViewCarryRequest extends ViewRecord
                             TextEntry::make('price')->color('primary')->label('Price per Kg - willing to pay (Approx.)'),
                             TextEntry::make('created_at')->color('primary')->label('Created')->since(),
                             TextEntry::make('user.name')->color('primary')->label('Created By'),
+                            TextEntry::make('user.phone_number')
+                                ->formatStateUsing(fn($record, $state) => $record->myApprovedOfferExists() || auth()->user()->id == $record->user_id ? $state : '-')
+                                ->color('primary')
+                                ->label('Phone Number'),
+
+                            TextEntry::make('user.facebook_profile')
+                                ->formatStateUsing(fn($record, $state) => $record->myApprovedOfferExists() || auth()->user()->id == $record->user_id ? $state : '-')
+                                ->url(fn ($record, $state) => $record->myApprovedOfferExists() || auth()->user()->id == $record->user_id ? $state : '-')
+                                ->icon('heroicon-o-link')
+                                ->color('primary')
+                                ->label('Facebook Url'),
                             Section::make('Items to Buy')
                                 ->visible(fn(Model $record) => $record->products()->count())
                                 ->schema([
                                     TextEntry::make('products.product_name')->label('Product Name'),
                                     TextEntry::make('products.product_link')
                                         ->formatStateUsing(fn($record) => 'Link')
-                                        ->url(fn ($record) => $record->website)
                                         ->url(fn ($record) => $record->products()->first()->product_link)
                                         ->icon('heroicon-o-link')
                                         ->label('Product Link'),

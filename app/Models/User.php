@@ -35,7 +35,8 @@ class User extends Authenticatable implements MustVerifyEmail, UserContract, Fil
         'email_verified_at',
         'profile_image',
         'phone_number',
-        'facebook_profile'
+        'facebook_profile',
+        'super_admin'
     ];
 
     protected $hidden = [
@@ -53,13 +54,20 @@ class User extends Authenticatable implements MustVerifyEmail, UserContract, Fil
         return true;
     }
 
+
+    public function isSuperAdmin(): bool
+    {
+        return !! auth()->user()->is_admin;
+    }
+
+
     public function canAccessPanel(Panel $panel): bool
     {
         return true;
     }
 
-    public function travels(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function trips(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        return $this->hasMany(Travel::class);
+        return $this->hasMany(Trip::class);
     }
 }

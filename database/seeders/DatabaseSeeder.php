@@ -15,21 +15,29 @@ class DatabaseSeeder extends Seeder
         DB::disableQueryLog();
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         User::query()->truncate();
-        Country::query()->truncate();
-        City::query()->truncate();
+//        Country::query()->truncate();
+//        City::query()->truncate();
 
         /** @var User $user */
-        $user = User::factory()->create([
+        User::factory()->create([
+            'name' => 'Kazmi',
+            'email' => 'sydabdrehman@gmail.com',
+            'password' => bcrypt('sydabdrehman@gmail.com'),
+            'is_admin' => true,
+        ]);
+
+        /** @var User $user */
+        User::factory()->create([
             'name' => 'Test User',
             'email' => 'user@example.com',
         ]);
 
         User::factory()->count(20)->create();
 
-        $this->call([
-            CountrySeeder::class,
-            CitySeeder::class,
-        ]);
+//        $this->call([
+//            CountrySeeder::class,
+//            CitySeeder::class,
+//        ]);
 
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
         DB::enableQueryLog();

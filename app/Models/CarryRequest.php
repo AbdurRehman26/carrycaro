@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\GeneralStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -50,4 +51,16 @@ class CarryRequest extends Model
     public function offers(): HasMany { return $this->hasMany(CarryRequestOffer::class); }
 
     public function myOffer(): HasOne { return $this->hasOne(CarryRequestOffer::class)->where('user_id', auth()->user()->id); }
+
+    public function myApprovedOfferExists()
+    {
+        return $this->join('carry_request_offers', 'carry_request_offers.carry_request_id', 'carry_requests.id')
+        ->join('trips', 'trips.id', 'carry_request_offers.trip_id')
+        ->where(function($query){
+            $query->where('trips.user_id', auth()->user()->id)
+                ->orWhere('carry_request_offers.user_id', auth()->user()->id);
+        })
+        ->where('carry_request_offers.status', GeneralStatus::APPROVED)
+        ->exists();
+    }
 }
