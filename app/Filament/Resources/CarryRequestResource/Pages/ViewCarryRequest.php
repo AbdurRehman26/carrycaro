@@ -38,7 +38,7 @@ class ViewCarryRequest extends ViewRecord
                             TextEntry::make('preferred_date')->color('primary')->label('Preferred Date')->date(),
                             TextEntry::make('delivery_deadline')->color('primary')->label('Deadline')->date(),
                             TextEntry::make('weight')->color('primary')->suffix(' Kg')->badge(),
-                            TextEntry::make('price')->color('primary')->label('Price - willing to pay (Approx.)'),
+                            TextEntry::make('price')->color('primary')->label('Price per Kg - willing to pay (Approx.)'),
                             TextEntry::make('created_at')->color('primary')->label('Created')->since(),
                             TextEntry::make('user.name')->color('primary')->label('Created By'),
                             Section::make('Items to Buy')
