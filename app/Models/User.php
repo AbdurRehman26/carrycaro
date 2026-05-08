@@ -3,8 +3,6 @@
 namespace App\Models;
 
 use Carbon\Carbon;
-use Filament\Models\Contracts\FilamentUser;
-use Filament\Panel;
 use Illuminate\Contracts\Auth\Authenticatable as UserContract;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -22,7 +20,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property Carbon $updated_at
  * @property string $timezone
  */
-class User extends Authenticatable implements MustVerifyEmail, UserContract, FilamentUser
+class User extends Authenticatable implements MustVerifyEmail, UserContract
 {
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
@@ -36,7 +34,7 @@ class User extends Authenticatable implements MustVerifyEmail, UserContract, Fil
         'profile_image',
         'phone_number',
         'facebook_profile',
-        'super_admin'
+        'super_admin',
     ];
 
     protected $hidden = [
@@ -54,16 +52,9 @@ class User extends Authenticatable implements MustVerifyEmail, UserContract, Fil
         return true;
     }
 
-
     public function isSuperAdmin(): bool
     {
-        return !! auth()->user()->is_admin;
-    }
-
-
-    public function canAccessPanel(Panel $panel): bool
-    {
-        return true;
+        return (bool) $this->super_admin;
     }
 
     public function trips(): \Illuminate\Database\Eloquent\Relations\HasMany

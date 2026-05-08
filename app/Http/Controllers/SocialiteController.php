@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\UserResource;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
 
 class SocialiteController extends Controller
@@ -16,7 +17,7 @@ class SocialiteController extends Controller
         return Socialite::driver($provider)->stateless()->redirect();
     }
 
-    public function callback(string $provider)
+    public function callback(string $provider): JsonResponse
     {
         $this->validateProvider($provider);
 
@@ -25,24 +26,26 @@ class SocialiteController extends Controller
         $user = User::firstWhere(['email' => $response->getEmail()]);
 
         if ($user) {
-            $user->update([$provider . '_id' => $response->getId()]);
+            $user->update([$provider.'_id' => $response->getId()]);
         } else {
             User::create([
-                $provider . '_id' => $response->getId(),
-                'name'            => $response->getName(),
-                'email'           => $response->getEmail(),
-                'profile_image'   => $response->getAvatar(),
-                'password'        => '',
+                $provider.'_id' => $response->getId(),
+                'name' => $response->getName(),
+                'email' => $response->getEmail(),
+                'profile_image' => $response->getAvatar(),
+                'password' => '',
                 'email_verified_at' => now(),
             ]);
 
             $user = User::firstWhere(['email' => $response->getEmail()]);
         }
 
-        Auth::login($user);
-        session()->regenerate();
+        $token = $user->createToken('auth-token')->plainTextToken;
 
-        return redirect('/');
+        return response()->json([
+            'user' => new UserResource($user),
+            'token' => $token,
+        ]);
     }
 
     protected function validateProvider(string $provider): array
