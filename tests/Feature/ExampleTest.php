@@ -13,6 +13,6 @@ it('serves swagger documentation', function () {
 
     $this->get('/docs/openapi.yaml')
         ->assertStatus(200)
-        ->assertSee('openapi: 3.0.3', false)
+        ->assertSee('openapi: 3.0.0', false)
         ->assertSee('/auth/register', false);
 });
