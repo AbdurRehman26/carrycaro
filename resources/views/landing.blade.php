@@ -15,7 +15,7 @@
     <nav class="site-nav" aria-label="Primary">
         <a href="#how-it-works">How it works</a>
         <a href="#routes">Routes</a>
-        <a href="{{ route('docs.swagger') }}">API docs</a>
+        <a href="{{ route('l5-swagger.default.api') }}">API docs</a>
     </nav>
     <a class="header-action" href="{{ url('/api/trips') }}">Browse trips</a>
 </header>
@@ -33,7 +33,7 @@
             </p>
             <div class="hero-actions">
                 <a class="primary-action" href="{{ url('/api/trips') }}">Find a route</a>
-                <a class="secondary-action" href="{{ route('docs.swagger') }}">View API</a>
+                <a class="secondary-action" href="{{ route('l5-swagger.default.api') }}">View API</a>
             </div>
         </div>
         <div class="route-strip" aria-label="Popular routes">
@@ -115,7 +115,7 @@
 
 <footer class="site-footer">
     <span>CarryCaro</span>
-    <a href="{{ route('docs.openapi') }}">OpenAPI spec</a>
+    <a href="{{ route('l5-swagger.default.docs') }}">OpenAPI spec</a>
 </footer>
 </body>
 </html>
