@@ -104,6 +104,20 @@ use OpenApi\Attributes as OA;
     type: 'object'
 )]
 #[OA\Schema(
+    schema: 'GoogleSignInRequest',
+    required: ['provider', 'id_token'],
+    properties: [
+        new OA\Property(property: 'provider', type: 'string', enum: ['google'], example: 'google'),
+        new OA\Property(
+            property: 'id_token',
+            type: 'string',
+            description: 'Google ID token returned by the Android or iOS Google Sign-In SDK.',
+            example: 'eyJhbGciOiJSUzI1NiIsImtpZCI6Ij...'
+        ),
+    ],
+    type: 'object'
+)]
+#[OA\Schema(
     schema: 'PaginatedTrips',
     required: ['data', 'links', 'meta'],
     properties: [
@@ -166,25 +180,17 @@ final class ApiDocumentation
 
     #[OA\Post(
         path: '/api/auth/social-login',
-        summary: 'Log in or register with a social provider',
-        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
-            required: ['provider', 'provider_id', 'name', 'email'],
-            properties: [
-                new OA\Property(property: 'provider', type: 'string', enum: ['google'], example: 'google'),
-                new OA\Property(property: 'provider_id', type: 'string', example: '10987654321'),
-                new OA\Property(property: 'name', type: 'string', maxLength: 255, example: 'Jane Doe'),
-                new OA\Property(property: 'email', type: 'string', format: 'email', example: 'jane@example.com'),
-                new OA\Property(property: 'profile_image', type: 'string', nullable: true, example: 'https://example.com/avatar.jpg'),
-            ],
-            type: 'object'
-        )),
+        summary: 'Log in or register with a Google ID token',
+        description: 'Mobile-only Google sign-in. The API verifies the supplied Google ID token with Google before creating or updating the user.',
+        operationId: 'googleSignIn',
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(ref: '#/components/schemas/GoogleSignInRequest')),
         tags: ['Auth'],
         responses: [
             new OA\Response(response: 200, description: 'Social login successful', content: new OA\JsonContent(properties: [
                 new OA\Property(property: 'user', ref: '#/components/schemas/User'),
                 new OA\Property(property: 'token', type: 'string'),
             ], type: 'object')),
-            new OA\Response(response: 422, description: 'Validation failed', content: new OA\JsonContent(ref: '#/components/schemas/ValidationErrorResponse')),
+            new OA\Response(response: 422, description: 'Validation failed, invalid Google token, unverified email, or disallowed Google OAuth audience', content: new OA\JsonContent(ref: '#/components/schemas/ValidationErrorResponse')),
         ]
     )]
     public function socialLogin(): void {}

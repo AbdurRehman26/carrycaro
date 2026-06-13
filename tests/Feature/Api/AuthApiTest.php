@@ -2,6 +2,7 @@
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 
 uses(RefreshDatabase::class);
 
@@ -75,12 +76,22 @@ it('rejects invalid login credentials', function () {
 });
 
 it('handles social login and returns an auth token', function () {
+    config(['services.google.client_ids' => ['mobile-client-id.apps.googleusercontent.com']]);
+
+    Http::fake([
+        'https://oauth2.googleapis.com/tokeninfo*' => Http::response([
+            'aud' => 'mobile-client-id.apps.googleusercontent.com',
+            'sub' => 'google-user-123',
+            'name' => 'Jamie Doe',
+            'email' => 'jamie@example.com',
+            'email_verified' => 'true',
+            'picture' => 'https://example.com/avatar.jpg',
+        ]),
+    ]);
+
     $response = $this->postJson('/api/auth/social-login', [
         'provider' => 'google',
-        'provider_id' => 'google-user-123',
-        'name' => 'Jamie Doe',
-        'email' => 'jamie@example.com',
-        'profile_image' => 'https://example.com/avatar.jpg',
+        'id_token' => 'valid-google-id-token',
     ]);
 
     $response
@@ -90,10 +101,27 @@ it('handles social login and returns an auth token', function () {
             'token',
         ]);
 
-    expect(User::where('email', 'jamie@example.com')->exists())->toBeTrue();
+    $user = User::where('email', 'jamie@example.com')->first();
+
+    expect($user)->not->toBeNull()
+        ->and($user->google_id)->toBe('google-user-123')
+        ->and($user->profile_image)->toBe('https://example.com/avatar.jpg');
 });
 
 it('updates an existing user during social login', function () {
+    config(['services.google.client_ids' => ['mobile-client-id.apps.googleusercontent.com']]);
+
+    Http::fake([
+        'https://oauth2.googleapis.com/tokeninfo*' => Http::response([
+            'aud' => 'mobile-client-id.apps.googleusercontent.com',
+            'sub' => 'google-user-456',
+            'name' => 'Jamie Doe',
+            'email' => 'jamie@example.com',
+            'email_verified' => true,
+            'picture' => 'https://example.com/new.jpg',
+        ]),
+    ]);
+
     $user = User::factory()->create([
         'email' => 'jamie@example.com',
         'profile_image' => 'https://example.com/old.jpg',
@@ -101,10 +129,7 @@ it('updates an existing user during social login', function () {
 
     $this->postJson('/api/auth/social-login', [
         'provider' => 'google',
-        'provider_id' => 'google-user-456',
-        'name' => 'Jamie Doe',
-        'email' => 'jamie@example.com',
-        'profile_image' => 'https://example.com/new.jpg',
+        'id_token' => 'valid-google-id-token',
     ])
         ->assertOk()
         ->assertJsonPath('user.id', $user->id)
@@ -116,12 +141,46 @@ it('updates an existing user during social login', function () {
 it('validates social login payloads', function () {
     $this->postJson('/api/auth/social-login', [
         'provider' => 'facebook',
-        'provider_id' => '',
-        'name' => '',
-        'email' => 'not-an-email',
+        'id_token' => '',
     ])
         ->assertUnprocessable()
-        ->assertJsonValidationErrors(['provider', 'provider_id', 'name', 'email']);
+        ->assertJsonValidationErrors(['provider', 'id_token']);
+});
+
+it('rejects invalid google id tokens', function () {
+    Http::fake([
+        'https://oauth2.googleapis.com/tokeninfo*' => Http::response([
+            'error' => 'invalid_token',
+        ], 400),
+    ]);
+
+    $this->postJson('/api/auth/social-login', [
+        'provider' => 'google',
+        'id_token' => 'invalid-google-id-token',
+    ])
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors(['id_token']);
+});
+
+it('rejects google id tokens from unexpected audiences', function () {
+    config(['services.google.client_ids' => ['expected-mobile-client-id.apps.googleusercontent.com']]);
+
+    Http::fake([
+        'https://oauth2.googleapis.com/tokeninfo*' => Http::response([
+            'aud' => 'other-client-id.apps.googleusercontent.com',
+            'sub' => 'google-user-123',
+            'name' => 'Jamie Doe',
+            'email' => 'jamie@example.com',
+            'email_verified' => true,
+        ]),
+    ]);
+
+    $this->postJson('/api/auth/social-login', [
+        'provider' => 'google',
+        'id_token' => 'wrong-audience-google-id-token',
+    ])
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors(['id_token']);
 });
 
 it('logs out the authenticated user', function () {

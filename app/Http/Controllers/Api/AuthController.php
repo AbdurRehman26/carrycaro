@@ -7,10 +7,12 @@ use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\SocialLoginRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Services\GoogleIdTokenVerifier;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
@@ -63,22 +65,25 @@ class AuthController extends Controller
     /**
      * Login or register via a social provider.
      */
-    public function socialLogin(SocialLoginRequest $request): JsonResponse
+    public function socialLogin(SocialLoginRequest $request, GoogleIdTokenVerifier $google): JsonResponse
     {
-        $user = User::firstWhere('email', $request->email);
+        $claims = $google->verify($request->string('id_token')->toString());
+
+        $user = User::firstWhere('email', $claims['email']);
 
         if ($user) {
             $user->update([
-                $request->provider.'_id' => $request->provider_id,
-                'profile_image' => $request->profile_image ?? $user->profile_image,
+                'google_id' => $claims['sub'],
+                'profile_image' => $claims['picture'] ?? $user->profile_image,
+                'email_verified_at' => $user->email_verified_at ?? now(),
             ]);
         } else {
             $user = User::create([
-                $request->provider.'_id' => $request->provider_id,
-                'name' => $request->name,
-                'email' => $request->email,
-                'profile_image' => $request->profile_image,
-                'password' => '',
+                'google_id' => $claims['sub'],
+                'name' => $claims['name'],
+                'email' => $claims['email'],
+                'profile_image' => $claims['picture'],
+                'password' => Str::random(40),
                 'email_verified_at' => now(),
             ]);
         }

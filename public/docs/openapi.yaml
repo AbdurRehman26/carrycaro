@@ -119,40 +119,15 @@ paths:
     post:
       tags:
         - Auth
-      summary: 'Log in or register with a social provider'
-      operationId: 056e19553124fc81429cbf5fa5897646
+      summary: 'Log in or register with a Google ID token'
+      description: 'Mobile-only Google sign-in. The API verifies the supplied Google ID token with Google before creating or updating the user.'
+      operationId: googleSignIn
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              required:
-                - provider
-                - provider_id
-                - name
-                - email
-              properties:
-                provider:
-                  type: string
-                  example: google
-                  enum:
-                    - google
-                provider_id:
-                  type: string
-                  example: '10987654321'
-                name:
-                  type: string
-                  example: 'Jane Doe'
-                  maxLength: 255
-                email:
-                  type: string
-                  format: email
-                  example: jane@example.com
-                profile_image:
-                  type: string
-                  example: 'https://example.com/avatar.jpg'
-                  nullable: true
-              type: object
+              $ref: '#/components/schemas/GoogleSignInRequest'
       responses:
         200:
           description: 'Social login successful'
@@ -166,7 +141,7 @@ paths:
                     type: string
                 type: object
         422:
-          description: 'Validation failed'
+          description: 'Validation failed, invalid Google token, unverified email, or disallowed Google OAuth audience'
           content:
             application/json:
               schema:
@@ -776,6 +751,21 @@ components:
           example: 'Can carry fragile items with proper packaging.'
           nullable: true
           maxLength: 1000
+      type: object
+    GoogleSignInRequest:
+      required:
+        - provider
+        - id_token
+      properties:
+        provider:
+          type: string
+          example: google
+          enum:
+            - google
+        id_token:
+          description: 'Google ID token returned by the Android or iOS Google Sign-In SDK.'
+          type: string
+          example: eyJhbGciOiJSUzI1NiIsImtpZCI6Ij...
       type: object
     PaginatedTrips:
       required:

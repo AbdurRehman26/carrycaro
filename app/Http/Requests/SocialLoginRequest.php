@@ -15,10 +15,7 @@ class SocialLoginRequest extends FormRequest
     {
         return [
             'provider' => ['required', 'string', 'in:google'],
-            'provider_id' => ['required', 'string', 'max:255'],
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255'],
-            'profile_image' => ['nullable', 'string', 'max:2048'],
+            'id_token' => ['required', 'string'],
         ];
     }
 }
