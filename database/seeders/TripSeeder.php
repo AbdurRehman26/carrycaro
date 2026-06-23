@@ -1,0 +1,41 @@
+<?php
+
+namespace Database\Seeders;
+
+use App\Models\City;
+use App\Models\Trip;
+use App\Models\User;
+use Illuminate\Database\Seeder;
+
+class TripSeeder extends Seeder
+{
+    public function run(): void
+    {
+        $users = User::query()->get();
+        $cities = City::query()->inRandomOrder()->limit(20)->get();
+
+        if ($users->isEmpty() || $cities->count() < 2) {
+            return;
+        }
+
+        $airlines = ['Lufthansa', 'Emirates', 'Qatar Airways', 'Turkish Airlines', 'Air France', 'British Airways'];
+
+        foreach ($users->take(15) as $index => $user) {
+            $fromCity = $cities[$index % $cities->count()];
+            $toCity = $cities[($index + 1) % $cities->count()];
+            $departureDate = now()->addDays($index + 2);
+
+            Trip::query()->create([
+                'user_id' => $user->id,
+                'from_city_id' => $fromCity->id,
+                'to_city_id' => $toCity->id,
+                'departure_date' => $departureDate,
+                'arrival_date' => $departureDate->copy()->addDay(),
+                'airline' => $airlines[$index % count($airlines)],
+                'notes' => 'Seeded trip with available luggage space.',
+                'weight_available' => fake()->randomFloat(1, 2, 25),
+                'weight_price' => (string) fake()->numberBetween(10, 80),
+            ]);
+        }
+    }
+}

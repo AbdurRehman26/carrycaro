@@ -34,7 +34,7 @@ class User extends Authenticatable implements MustVerifyEmail, UserContract
         'profile_image',
         'phone_number',
         'facebook_profile',
-        'super_admin',
+        'is_admin',
     ];
 
     protected $hidden = [
@@ -49,16 +49,21 @@ class User extends Authenticatable implements MustVerifyEmail, UserContract
 
     public function isAdmin(): bool
     {
-        return true;
+        return (bool) $this->is_admin;
     }
 
     public function isSuperAdmin(): bool
     {
-        return (bool) $this->super_admin;
+        return $this->isAdmin();
     }
 
     public function trips(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Trip::class);
+    }
+
+    public function sentChatMessages(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(ChatMessage::class, 'sender_id');
     }
 }

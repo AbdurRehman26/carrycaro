@@ -2,44 +2,43 @@
 
 namespace Database\Seeders;
 
+use App\Models\ChatConversation;
+use App\Models\ChatMessage;
 use App\Models\City;
 use App\Models\Country;
+use App\Models\Trip;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
         DB::disableQueryLog();
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-        User::query()->truncate();
-//        Country::query()->truncate();
-//        City::query()->truncate();
+        Schema::disableForeignKeyConstraints();
 
-        /** @var User $user */
-        User::factory()->create([
-            'name' => 'Kazmi',
-            'email' => 'sydabdrehman@gmail.com',
-            'password' => bcrypt('sydabdrehman@gmail.com'),
-            'is_admin' => true,
-        ]);
+        try {
+            DB::table('notifications')->truncate();
+            ChatMessage::query()->truncate();
+            ChatConversation::query()->truncate();
+            Trip::query()->truncate();
+            User::query()->truncate();
+            City::query()->truncate();
+            Country::query()->truncate();
 
-        /** @var User $user */
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'user@example.com',
-        ]);
-
-        User::factory()->count(20)->create();
-
-//        $this->call([
-//            CountrySeeder::class,
-//            CitySeeder::class,
-//        ]);
-
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
-        DB::enableQueryLog();
+            $this->call([
+                UserSeeder::class,
+                CountrySeeder::class,
+                CitySeeder::class,
+                TripSeeder::class,
+                ChatSeeder::class,
+                NotificationSeeder::class,
+            ]);
+        } finally {
+            Schema::enableForeignKeyConstraints();
+            DB::enableQueryLog();
+        }
     }
 }

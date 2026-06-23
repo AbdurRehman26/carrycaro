@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\CityController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\TripController;
@@ -42,4 +43,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/trips', [TripController::class, 'store']);
     Route::put('/trips/{trip}', [TripController::class, 'update']);
     Route::delete('/trips/{trip}', [TripController::class, 'destroy']);
+
+    // Chat
+    Route::get('/conversations', [ChatController::class, 'index']);
+    Route::post('/conversations', [ChatController::class, 'store']);
+    Route::get('/conversations/{conversation}', [ChatController::class, 'show']);
+    Route::get('/conversations/{conversation}/messages', [ChatController::class, 'messages']);
+    Route::post('/conversations/{conversation}/messages', [ChatController::class, 'send']);
+    Route::patch('/conversations/{conversation}/read', [ChatController::class, 'markAsRead']);
 });

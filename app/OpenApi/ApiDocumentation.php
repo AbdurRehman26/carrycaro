@@ -118,6 +118,52 @@ use OpenApi\Attributes as OA;
     type: 'object'
 )]
 #[OA\Schema(
+    schema: 'ChatMessage',
+    required: ['id', 'conversation_id', 'sender', 'body', 'created_at'],
+    properties: [
+        new OA\Property(property: 'id', type: 'integer', example: 1),
+        new OA\Property(property: 'conversation_id', type: 'integer', example: 1),
+        new OA\Property(property: 'sender', ref: '#/components/schemas/User'),
+        new OA\Property(property: 'body', type: 'string', example: 'Can you carry a small package?'),
+        new OA\Property(property: 'read_at', type: 'string', format: 'date-time', nullable: true),
+        new OA\Property(property: 'created_at', type: 'string', format: 'date-time', nullable: true),
+        new OA\Property(property: 'updated_at', type: 'string', format: 'date-time', nullable: true),
+    ],
+    type: 'object'
+)]
+#[OA\Schema(
+    schema: 'ChatConversation',
+    required: ['id', 'other_user', 'unread_count'],
+    properties: [
+        new OA\Property(property: 'id', type: 'integer', example: 1),
+        new OA\Property(property: 'other_user', ref: '#/components/schemas/User'),
+        new OA\Property(property: 'trip', ref: '#/components/schemas/Trip', nullable: true),
+        new OA\Property(property: 'last_message', ref: '#/components/schemas/ChatMessage', nullable: true),
+        new OA\Property(property: 'unread_count', type: 'integer', example: 2),
+        new OA\Property(property: 'last_message_at', type: 'string', format: 'date-time', nullable: true),
+        new OA\Property(property: 'created_at', type: 'string', format: 'date-time', nullable: true),
+        new OA\Property(property: 'updated_at', type: 'string', format: 'date-time', nullable: true),
+    ],
+    type: 'object'
+)]
+#[OA\Schema(
+    schema: 'StartConversationRequest',
+    required: ['user_id'],
+    properties: [
+        new OA\Property(property: 'user_id', type: 'integer', description: 'The other participant user id.', example: 2),
+        new OA\Property(property: 'trip_id', type: 'integer', nullable: true, description: 'Optional trip context for this conversation.', example: 10),
+    ],
+    type: 'object'
+)]
+#[OA\Schema(
+    schema: 'StoreChatMessageRequest',
+    required: ['body'],
+    properties: [
+        new OA\Property(property: 'body', type: 'string', maxLength: 5000, example: 'Can you carry a small package?'),
+    ],
+    type: 'object'
+)]
+#[OA\Schema(
     schema: 'PaginatedTrips',
     required: ['data', 'links', 'meta'],
     properties: [
@@ -396,4 +442,127 @@ final class ApiDocumentation
         ]
     )]
     public function tripsDelete(): void {}
+
+    #[OA\Get(
+        path: '/api/conversations',
+        summary: 'List authenticated user conversations',
+        security: [['sanctum' => []]],
+        tags: ['Chat'],
+        parameters: [
+            new OA\Parameter(name: 'page', in: 'query', required: false, schema: new OA\Schema(type: 'integer', minimum: 1)),
+            new OA\Parameter(name: 'per_page', in: 'query', required: false, schema: new OA\Schema(type: 'integer', default: 15, minimum: 1)),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Paginated conversation list', content: new OA\JsonContent(properties: [
+                new OA\Property(property: 'data', type: 'array', items: new OA\Items(ref: '#/components/schemas/ChatConversation')),
+                new OA\Property(property: 'links', type: 'object'),
+                new OA\Property(property: 'meta', type: 'object'),
+            ], type: 'object')),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+        ]
+    )]
+    public function conversationsIndex(): void {}
+
+    #[OA\Post(
+        path: '/api/conversations',
+        summary: 'Start or reuse a conversation',
+        security: [['sanctum' => []]],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(ref: '#/components/schemas/StartConversationRequest')),
+        tags: ['Chat'],
+        responses: [
+            new OA\Response(response: 200, description: 'Existing conversation', content: new OA\JsonContent(properties: [
+                new OA\Property(property: 'conversation', ref: '#/components/schemas/ChatConversation'),
+            ], type: 'object')),
+            new OA\Response(response: 201, description: 'Conversation created', content: new OA\JsonContent(properties: [
+                new OA\Property(property: 'conversation', ref: '#/components/schemas/ChatConversation'),
+            ], type: 'object')),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+            new OA\Response(response: 422, description: 'Validation failed', content: new OA\JsonContent(ref: '#/components/schemas/ValidationErrorResponse')),
+        ]
+    )]
+    public function conversationsStore(): void {}
+
+    #[OA\Get(
+        path: '/api/conversations/{conversation}',
+        summary: 'Show a conversation',
+        security: [['sanctum' => []]],
+        tags: ['Chat'],
+        parameters: [
+            new OA\Parameter(name: 'conversation', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Conversation details', content: new OA\JsonContent(properties: [
+                new OA\Property(property: 'conversation', ref: '#/components/schemas/ChatConversation'),
+            ], type: 'object')),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+            new OA\Response(response: 403, description: 'Forbidden'),
+            new OA\Response(response: 404, description: 'Not found'),
+        ]
+    )]
+    public function conversationsShow(): void {}
+
+    #[OA\Get(
+        path: '/api/conversations/{conversation}/messages',
+        summary: 'List conversation messages',
+        security: [['sanctum' => []]],
+        tags: ['Chat'],
+        parameters: [
+            new OA\Parameter(name: 'conversation', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+            new OA\Parameter(name: 'page', in: 'query', required: false, schema: new OA\Schema(type: 'integer', minimum: 1)),
+            new OA\Parameter(name: 'per_page', in: 'query', required: false, schema: new OA\Schema(type: 'integer', default: 25, minimum: 1)),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Paginated message list', content: new OA\JsonContent(properties: [
+                new OA\Property(property: 'data', type: 'array', items: new OA\Items(ref: '#/components/schemas/ChatMessage')),
+                new OA\Property(property: 'links', type: 'object'),
+                new OA\Property(property: 'meta', type: 'object'),
+            ], type: 'object')),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+            new OA\Response(response: 403, description: 'Forbidden'),
+            new OA\Response(response: 404, description: 'Not found'),
+        ]
+    )]
+    public function conversationMessages(): void {}
+
+    #[OA\Post(
+        path: '/api/conversations/{conversation}/messages',
+        summary: 'Send a chat message',
+        security: [['sanctum' => []]],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(ref: '#/components/schemas/StoreChatMessageRequest')),
+        tags: ['Chat'],
+        parameters: [
+            new OA\Parameter(name: 'conversation', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
+        responses: [
+            new OA\Response(response: 201, description: 'Message sent', content: new OA\JsonContent(properties: [
+                new OA\Property(property: 'message', type: 'string'),
+                new OA\Property(property: 'chat_message', ref: '#/components/schemas/ChatMessage'),
+            ], type: 'object')),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+            new OA\Response(response: 403, description: 'Forbidden'),
+            new OA\Response(response: 404, description: 'Not found'),
+            new OA\Response(response: 422, description: 'Validation failed', content: new OA\JsonContent(ref: '#/components/schemas/ValidationErrorResponse')),
+        ]
+    )]
+    public function conversationMessagesStore(): void {}
+
+    #[OA\Patch(
+        path: '/api/conversations/{conversation}/read',
+        summary: 'Mark conversation messages as read',
+        security: [['sanctum' => []]],
+        tags: ['Chat'],
+        parameters: [
+            new OA\Parameter(name: 'conversation', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Conversation marked as read', content: new OA\JsonContent(properties: [
+                new OA\Property(property: 'message', type: 'string'),
+                new OA\Property(property: 'read_messages_count', type: 'integer', example: 3),
+            ], type: 'object')),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+            new OA\Response(response: 403, description: 'Forbidden'),
+            new OA\Response(response: 404, description: 'Not found'),
+        ]
+    )]
+    public function conversationsRead(): void {}
 }
