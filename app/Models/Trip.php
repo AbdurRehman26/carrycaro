@@ -18,6 +18,7 @@ class Trip extends Model
         'to_city_id',
         'departure_date',
         'arrival_date',
+        'airline_id',
         'airline',
         'notes',
         'weight_available',
@@ -42,5 +43,10 @@ class Trip extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function airlineRecord(): BelongsTo
+    {
+        return $this->belongsTo(Airline::class, 'airline_id');
     }
 }

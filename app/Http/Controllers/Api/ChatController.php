@@ -21,7 +21,7 @@ class ChatController extends Controller
 
         $conversations = ChatConversation::query()
             ->forUser($user)
-            ->with(['userOne', 'userTwo', 'trip.fromCity.country', 'trip.toCity.country', 'lastMessage.sender'])
+            ->with(['userOne', 'userTwo', 'trip.fromCity.country', 'trip.toCity.country', 'trip.airlineRecord', 'lastMessage.sender'])
             ->withCount([
                 'messages as unread_messages_count' => fn (Builder $query) => $query
                     ->where('sender_id', '!=', $user->id)
@@ -58,7 +58,7 @@ class ChatController extends Controller
             ]);
         }
 
-        $conversation->load(['userOne', 'userTwo', 'trip.fromCity.country', 'trip.toCity.country', 'lastMessage.sender']);
+        $conversation->load(['userOne', 'userTwo', 'trip.fromCity.country', 'trip.toCity.country', 'trip.airlineRecord', 'lastMessage.sender']);
 
         return response()->json([
             'conversation' => new ChatConversationResource($conversation),
@@ -69,7 +69,7 @@ class ChatController extends Controller
     {
         $this->authorizeParticipant($request, $conversation);
 
-        $conversation->load(['userOne', 'userTwo', 'trip.fromCity.country', 'trip.toCity.country', 'lastMessage.sender']);
+        $conversation->load(['userOne', 'userTwo', 'trip.fromCity.country', 'trip.toCity.country', 'trip.airlineRecord', 'lastMessage.sender']);
         $conversation->loadCount([
             'messages as unread_messages_count' => fn (Builder $query) => $query
                 ->where('sender_id', '!=', $request->user()->id)

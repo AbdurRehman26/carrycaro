@@ -70,6 +70,19 @@ use OpenApi\Attributes as OA;
     type: 'object'
 )]
 #[OA\Schema(
+    schema: 'Airline',
+    required: ['id', 'name', 'is_active'],
+    properties: [
+        new OA\Property(property: 'id', type: 'integer', example: 1),
+        new OA\Property(property: 'name', type: 'string', example: 'Emirates'),
+        new OA\Property(property: 'iata_code', type: 'string', nullable: true, example: 'EK'),
+        new OA\Property(property: 'icao_code', type: 'string', nullable: true, example: 'UAE'),
+        new OA\Property(property: 'country', type: 'string', nullable: true, example: 'United Arab Emirates'),
+        new OA\Property(property: 'is_active', type: 'boolean', example: true),
+    ],
+    type: 'object'
+)]
+#[OA\Schema(
     schema: 'Trip',
     required: ['id', 'from_city', 'to_city', 'departure_date', 'arrival_date', 'weight_available', 'weight_price'],
     properties: [
@@ -79,7 +92,9 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'user', ref: '#/components/schemas/User'),
         new OA\Property(property: 'departure_date', type: 'string', format: 'date', example: '2026-06-15'),
         new OA\Property(property: 'arrival_date', type: 'string', format: 'date', example: '2026-06-16'),
+        new OA\Property(property: 'airline_id', type: 'integer', nullable: true, example: 1),
         new OA\Property(property: 'airline', type: 'string', nullable: true, example: 'Lufthansa'),
+        new OA\Property(property: 'airline_details', ref: '#/components/schemas/Airline', nullable: true),
         new OA\Property(property: 'notes', type: 'string', nullable: true, example: 'Can carry fragile items with proper packaging.'),
         new OA\Property(property: 'weight_available', type: 'number', example: 5),
         new OA\Property(property: 'weight_price', type: 'string', example: 'EUR 12/kg'),
@@ -98,6 +113,7 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'arrival_date', type: 'string', format: 'date', example: '2026-06-16'),
         new OA\Property(property: 'weight_available', type: 'number', minimum: 0.1, example: 5),
         new OA\Property(property: 'weight_price', type: 'string', maxLength: 255, example: 'EUR 12/kg'),
+        new OA\Property(property: 'airline_id', type: 'integer', nullable: true, description: 'Existing airline id. When provided, the trip airline name is copied from this airline.', example: 1),
         new OA\Property(property: 'airline', type: 'string', nullable: true, maxLength: 255, example: 'Lufthansa'),
         new OA\Property(property: 'notes', type: 'string', nullable: true, maxLength: 1000, example: 'Can carry fragile items with proper packaging.'),
     ],
@@ -285,6 +301,22 @@ final class ApiDocumentation
         ]
     )]
     public function countries(): void {}
+
+    #[OA\Get(
+        path: '/api/airlines',
+        summary: 'List active airlines',
+        tags: ['Locations'],
+        parameters: [
+            new OA\Parameter(name: 'search', in: 'query', required: false, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'q', description: 'Alias for search', in: 'query', required: false, schema: new OA\Schema(type: 'string')),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Airline list', content: new OA\JsonContent(properties: [
+                new OA\Property(property: 'airlines', type: 'array', items: new OA\Items(ref: '#/components/schemas/Airline')),
+            ], type: 'object')),
+        ]
+    )]
+    public function airlines(): void {}
 
     #[OA\Get(
         path: '/api/profile',

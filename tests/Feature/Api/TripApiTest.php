@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Airline;
 use App\Models\City;
 use App\Models\Country;
 use App\Models\Trip;
@@ -82,6 +83,89 @@ it('creates and lists trips for the authenticated user', function () {
         ->assertJsonPath('data.0.id', $tripId);
 
     expect(Trip::count())->toBe(1);
+});
+
+it('resolves an existing airline by name when creating a trip', function () {
+    $user = User::factory()->create();
+    Sanctum::actingAs($user);
+    $airline = Airline::create(['name' => 'Emirates', 'iata_code' => 'EK', 'icao_code' => 'UAE', 'country' => 'United Arab Emirates']);
+
+    $countryA = Country::create(['name' => 'United Kingdom', 'code' => 'GB']);
+    $countryB = Country::create(['name' => 'France', 'code' => 'FR']);
+    $fromCity = City::create(['name' => 'London', 'country_id' => $countryA->id, 'city_type' => 'admin']);
+    $toCity = City::create(['name' => 'Paris', 'country_id' => $countryB->id, 'city_type' => 'admin']);
+
+    $response = $this->postJson('/api/trips', [
+        'from_city_id' => $fromCity->id,
+        'to_city_id' => $toCity->id,
+        'departure_date' => now()->addDay()->toDateTimeString(),
+        'arrival_date' => now()->addDays(2)->toDateTimeString(),
+        'weight_available' => 12.5,
+        'weight_price' => '45',
+        'airline' => 'emirates',
+    ]);
+
+    $response
+        ->assertCreated()
+        ->assertJsonPath('trip.airline_id', $airline->id)
+        ->assertJsonPath('trip.airline', 'Emirates')
+        ->assertJsonPath('trip.airline_details.name', 'Emirates');
+
+    expect(Airline::count())->toBe(1);
+});
+
+it('creates a missing airline by name when creating a trip', function () {
+    $user = User::factory()->create();
+    Sanctum::actingAs($user);
+
+    $countryA = Country::create(['name' => 'United Kingdom', 'code' => 'GB']);
+    $countryB = Country::create(['name' => 'France', 'code' => 'FR']);
+    $fromCity = City::create(['name' => 'London', 'country_id' => $countryA->id, 'city_type' => 'admin']);
+    $toCity = City::create(['name' => 'Paris', 'country_id' => $countryB->id, 'city_type' => 'admin']);
+
+    $response = $this->postJson('/api/trips', [
+        'from_city_id' => $fromCity->id,
+        'to_city_id' => $toCity->id,
+        'departure_date' => now()->addDay()->toDateTimeString(),
+        'arrival_date' => now()->addDays(2)->toDateTimeString(),
+        'weight_available' => 12.5,
+        'weight_price' => '45',
+        'airline' => 'CarryCaro Air',
+    ]);
+
+    $airline = Airline::where('name', 'CarryCaro Air')->first();
+
+    $response
+        ->assertCreated()
+        ->assertJsonPath('trip.airline_id', $airline->id)
+        ->assertJsonPath('trip.airline', 'CarryCaro Air');
+
+    expect($airline)->not->toBeNull();
+});
+
+it('uses an airline id when creating a trip', function () {
+    $user = User::factory()->create();
+    Sanctum::actingAs($user);
+    $airline = Airline::create(['name' => 'Qatar Airways', 'iata_code' => 'QR', 'icao_code' => 'QTR', 'country' => 'Qatar']);
+
+    $countryA = Country::create(['name' => 'United Kingdom', 'code' => 'GB']);
+    $countryB = Country::create(['name' => 'France', 'code' => 'FR']);
+    $fromCity = City::create(['name' => 'London', 'country_id' => $countryA->id, 'city_type' => 'admin']);
+    $toCity = City::create(['name' => 'Paris', 'country_id' => $countryB->id, 'city_type' => 'admin']);
+
+    $this->postJson('/api/trips', [
+        'from_city_id' => $fromCity->id,
+        'to_city_id' => $toCity->id,
+        'departure_date' => now()->addDay()->toDateTimeString(),
+        'arrival_date' => now()->addDays(2)->toDateTimeString(),
+        'weight_available' => 12.5,
+        'weight_price' => '45',
+        'airline_id' => $airline->id,
+        'airline' => 'Ignored Client Name',
+    ])
+        ->assertCreated()
+        ->assertJsonPath('trip.airline_id', $airline->id)
+        ->assertJsonPath('trip.airline', 'Qatar Airways');
 });
 
 it('shows a public trip by id', function () {

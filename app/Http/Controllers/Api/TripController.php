@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Requests\StoreTripRequest;
 use App\Http\Requests\UpdateTripRequest;
 use App\Http\Resources\TripResource;
+use App\Models\Airline;
 use App\Models\Trip;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -18,7 +20,7 @@ class TripController extends Controller
      */
     public function index(Request $request): AnonymousResourceCollection
     {
-        $query = Trip::with(['fromCity.country', 'toCity.country', 'user']);
+        $query = Trip::with(['fromCity.country', 'toCity.country', 'user', 'airlineRecord']);
 
         // Filter by departure city
         if ($request->filled('from_city_id')) {
@@ -55,7 +57,7 @@ class TripController extends Controller
     {
         $trips = $request->user()
             ->trips()
-            ->with(['fromCity.country', 'toCity.country'])
+            ->with(['fromCity.country', 'toCity.country', 'airlineRecord'])
             ->latest('departure_date')
             ->paginate($request->integer('per_page', 15));
 
@@ -67,9 +69,11 @@ class TripController extends Controller
      */
     public function store(StoreTripRequest $request): JsonResponse
     {
-        $trip = $request->user()->trips()->create($request->validated());
+        $trip = $request->user()->trips()->create(
+            $this->withResolvedAirline($request->validated())
+        );
 
-        $trip->load(['fromCity.country', 'toCity.country', 'user']);
+        $trip->load(['fromCity.country', 'toCity.country', 'user', 'airlineRecord']);
 
         return response()->json([
             'message' => 'Trip created successfully.',
@@ -82,7 +86,7 @@ class TripController extends Controller
      */
     public function show(Trip $trip): JsonResponse
     {
-        $trip->load(['fromCity.country', 'toCity.country', 'user']);
+        $trip->load(['fromCity.country', 'toCity.country', 'user', 'airlineRecord']);
 
         return response()->json([
             'trip' => new TripResource($trip),
@@ -99,8 +103,8 @@ class TripController extends Controller
             return response()->json(['message' => 'Unauthorized.'], 403);
         }
 
-        $trip->update($request->validated());
-        $trip->load(['fromCity.country', 'toCity.country', 'user']);
+        $trip->update($this->withResolvedAirline($request->validated()));
+        $trip->load(['fromCity.country', 'toCity.country', 'user', 'airlineRecord']);
 
         return response()->json([
             'message' => 'Trip updated successfully.',
@@ -122,5 +126,48 @@ class TripController extends Controller
         return response()->json([
             'message' => 'Trip deleted successfully.',
         ]);
+    }
+
+    private function withResolvedAirline(array $data): array
+    {
+        if (array_key_exists('airline_id', $data) && $data['airline_id']) {
+            $airline = Airline::query()->find($data['airline_id']);
+
+            if ($airline) {
+                $data['airline_id'] = $airline->id;
+                $data['airline'] = $airline->name;
+            }
+
+            return $data;
+        }
+
+        if (! array_key_exists('airline', $data)) {
+            return $data;
+        }
+
+        $airlineName = trim((string) $data['airline']);
+
+        if ($airlineName === '') {
+            $data['airline'] = null;
+            $data['airline_id'] = null;
+
+            return $data;
+        }
+
+        $airline = Airline::query()
+            ->where(fn (Builder $query) => $query->whereRaw('LOWER(name) = ?', [mb_strtolower($airlineName)]))
+            ->first();
+
+        if (! $airline) {
+            $airline = Airline::query()->create([
+                'name' => $airlineName,
+                'is_active' => true,
+            ]);
+        }
+
+        $data['airline_id'] = $airline->id;
+        $data['airline'] = $airline->name;
+
+        return $data;
     }
 }

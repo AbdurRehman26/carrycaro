@@ -234,6 +234,38 @@ paths:
                     items:
                       $ref: '#/components/schemas/Country'
                 type: object
+  /api/airlines:
+    get:
+      tags:
+        - Locations
+      summary: 'List active airlines'
+      operationId: 9ec597245e2ab7d323a031b2c2e83233
+      parameters:
+        -
+          name: search
+          in: query
+          required: false
+          schema:
+            type: string
+        -
+          name: q
+          in: query
+          description: 'Alias for search'
+          required: false
+          schema:
+            type: string
+      responses:
+        200:
+          description: 'Airline list'
+          content:
+            application/json:
+              schema:
+                properties:
+                  airlines:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Airline'
+                type: object
   /api/profile:
     get:
       tags:
@@ -909,6 +941,34 @@ components:
         country:
           $ref: '#/components/schemas/Country'
       type: object
+    Airline:
+      required:
+        - id
+        - name
+        - is_active
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Emirates
+        iata_code:
+          type: string
+          example: EK
+          nullable: true
+        icao_code:
+          type: string
+          example: UAE
+          nullable: true
+        country:
+          type: string
+          example: 'United Arab Emirates'
+          nullable: true
+        is_active:
+          type: boolean
+          example: true
+      type: object
     Trip:
       required:
         - id
@@ -936,9 +996,18 @@ components:
           type: string
           format: date
           example: '2026-06-16'
+        airline_id:
+          type: integer
+          example: 1
+          nullable: true
         airline:
           type: string
           example: Lufthansa
+          nullable: true
+        airline_details:
+          oneOf:
+            -
+              $ref: '#/components/schemas/Airline'
           nullable: true
         notes:
           type: string
@@ -990,6 +1059,11 @@ components:
           type: string
           example: 'EUR 12/kg'
           maxLength: 255
+        airline_id:
+          description: 'Existing airline id. When provided, the trip airline name is copied from this airline.'
+          type: integer
+          example: 1
+          nullable: true
         airline:
           type: string
           example: Lufthansa

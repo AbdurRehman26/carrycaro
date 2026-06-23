@@ -20,6 +20,7 @@ class StoreTripRequest extends FormRequest
             'arrival_date' => ['required', 'date', 'after_or_equal:departure_date'],
             'weight_available' => ['required', 'numeric', 'min:0.1'],
             'weight_price' => ['required', 'string', 'max:255'],
+            'airline_id' => ['nullable', 'integer', 'exists:airlines,id'],
             'airline' => ['nullable', 'string', 'max:255'],
             'notes' => ['nullable', 'string', 'max:1000'],
         ];

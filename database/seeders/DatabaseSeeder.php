@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Airline;
 use App\Models\ChatConversation;
 use App\Models\ChatMessage;
 use App\Models\City;
@@ -25,6 +26,7 @@ class DatabaseSeeder extends Seeder
             ChatConversation::query()->truncate();
             Trip::query()->truncate();
             User::query()->truncate();
+            Airline::query()->truncate();
             City::query()->truncate();
             Country::query()->truncate();
 
@@ -32,6 +34,7 @@ class DatabaseSeeder extends Seeder
                 UserSeeder::class,
                 CountrySeeder::class,
                 CitySeeder::class,
+                AirlineSeeder::class,
                 TripSeeder::class,
                 ChatSeeder::class,
                 NotificationSeeder::class,

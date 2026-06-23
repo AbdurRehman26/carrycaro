@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AirlineController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\CityController;
@@ -23,6 +24,7 @@ Route::prefix('auth')->group(function () {
 // Public data routes
 Route::get('/cities', [CityController::class, 'index']);
 Route::get('/countries', [CityController::class, 'countries']);
+Route::get('/airlines', [AirlineController::class, 'index']);
 
 // Public trip browsing
 Route::get('/trips', [TripController::class, 'index']);
